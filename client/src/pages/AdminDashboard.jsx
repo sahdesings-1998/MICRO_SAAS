@@ -511,13 +511,13 @@ const AdminDashboard = () => {
 
   const cards = stats
     ? [
-        { label: "Total Members", value: stats.totalMembers ?? 0 },
-        { label: "Active Members", value: stats.activeMembers ?? 0 },
-        { label: "Inactive Members", value: stats.inactiveMembers ?? 0 },
-        { label: "Paid Members", value: stats.paidMembers ?? 0 },
-        { label: "Unpaid Members", value: stats.unpaidMembers ?? 0 },
-        { label: "Total Revenue", value: `$${stats.totalRevenue ?? 0}` },
-      ]
+      { label: "Total Members", value: stats.totalMembers ?? 0 },
+      { label: "Active Members", value: stats.activeMembers ?? 0 },
+      { label: "Inactive Members", value: stats.inactiveMembers ?? 0 },
+      { label: "Paid Members", value: stats.paidMembers ?? 0 },
+      { label: "Unpaid Members", value: stats.unpaidMembers ?? 0 },
+      { label: "Total Revenue", value: `$${stats.totalRevenue ?? 0}` },
+    ]
     : [];
 
   const renderContent = () => {
@@ -621,10 +621,10 @@ const AdminDashboard = () => {
         memberInvoices={
           viewMember
             ? (invoices || []).filter(
-                (inv) =>
-                  inv.isDeleted !== true &&
-                  String(inv.memberId?._id ?? inv.memberId ?? "") === String(viewMember._id ?? viewMember.userId ?? "")
-              )
+              (inv) =>
+                inv.isDeleted !== true &&
+                String(inv.memberId?._id ?? inv.memberId ?? "") === String(viewMember._id ?? viewMember.userId ?? "")
+            )
             : []
         }
         onClose={() => {
@@ -917,13 +917,13 @@ const AdminDashboard = () => {
           </div>
           {subscriptionFormErr && <p className="sa-form-error">{subscriptionFormErr}</p>}
           <div className="sa-form-actions">
-          <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowSubscriptionModal(false)}>
+            <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowSubscriptionModal(false)}>
               Cancel
             </button>
             <button type="submit" className="sa-btn sa-btn-primary">
               {isSubscriptionEdit ? "Update Plan" : "Create Plan"}
             </button>
-            
+
           </div>
         </form>
       </DashboardModal>
@@ -1005,20 +1005,14 @@ const AdminDashboard = () => {
               </div>
               <div className="sa-form-field">
                 <label className="sa-form-label">Status</label>
-                {(invoiceForm.status || "").toLowerCase() === "paid" ? (
-                  <div className="sa-form-input" style={{ background: "#f8fafc", cursor: "default" }}>
-                    Paid (read-only)
-                  </div>
-                ) : (
-                  <select
-                    className="sa-form-input"
-                    value={invoiceForm.status}
-                    onChange={(e) => setInvoiceForm({ ...invoiceForm, status: e.target.value })}
-                  >
-                    <option value="Unpaid">Unpaid</option>
-                    <option value="Paid">Paid</option>
-                  </select>
-                )}
+                <select
+                  className="sa-form-input"
+                  value={invoiceForm.status}
+                  onChange={(e) => setInvoiceForm({ ...invoiceForm, status: e.target.value })}
+                >
+                  <option value="Unpaid">Unpaid</option>
+                  <option value="Paid">Paid</option>
+                </select>
               </div>
             </div>
           )}
@@ -1026,32 +1020,26 @@ const AdminDashboard = () => {
             <div className="sa-form-row">
               <div className="sa-form-field">
                 <label className="sa-form-label">Status</label>
-                {(invoiceForm.status || "").toLowerCase() === "paid" ? (
-                  <div className="sa-form-input" style={{ background: "#f8fafc", cursor: "default" }}>
-                    Paid (read-only)
-                  </div>
-                ) : (
-                  <select
-                    className="sa-form-input"
-                    value={invoiceForm.status}
-                    onChange={(e) => setInvoiceForm({ ...invoiceForm, status: e.target.value })}
-                  >
-                    <option value="Unpaid">Unpaid</option>
-                    <option value="Paid">Paid</option>
-                  </select>
-                )}
+                <select
+                  className="sa-form-input"
+                  value={invoiceForm.status}
+                  onChange={(e) => setInvoiceForm({ ...invoiceForm, status: e.target.value })}
+                >
+                  <option value="Unpaid">Unpaid</option>
+                  <option value="Paid">Paid</option>
+                </select>
               </div>
             </div>
           )}
           {invoiceFormErr && <p className="sa-form-error">{invoiceFormErr}</p>}
           <div className="sa-form-actions">
-          <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowInvoiceModal(false)}>
+            <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowInvoiceModal(false)}>
               Cancel
             </button>
             <button type="submit" className="sa-btn sa-btn-primary">
               {isInvoiceEdit ? "Update Invoice" : "Create Invoice"}
             </button>
-           
+
           </div>
         </form>
       </DashboardModal>
@@ -1079,7 +1067,7 @@ const AdminDashboard = () => {
             />
           </div>
           <div className="sa-form-actions">
-          <button
+            <button
               type="button"
               className="sa-btn sa-btn-outline"
               onClick={() => { setDeleteTarget(null); setDeleteReason(""); setDeleteType(""); }}
@@ -1094,7 +1082,7 @@ const AdminDashboard = () => {
             >
               Confirm Delete
             </button>
-           
+
           </div>
         </div>
       </DashboardModal>
@@ -1105,13 +1093,13 @@ const AdminDashboard = () => {
           Are you sure you want to logout?
         </p>
         <div className="sa-form-actions">
-        <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowLogout(false)}>
+          <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowLogout(false)}>
             Cancel
           </button>
           <button type="button" className="sa-btn sa-btn-danger" onClick={confirmLogout}>
             Yes, Logout
           </button>
-          
+
         </div>
       </DashboardModal>
     </MainLayout>
