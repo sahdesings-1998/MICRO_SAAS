@@ -26,7 +26,9 @@ const getCORSOptions = () => {
     "http://localhost:3000",           // Local development
     "http://localhost:5173",           // Vite development
     "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
+    "https://micro-saaas.onrender.com",
+    "https://micro-saas-kohl.vercel.app"
   ];
 
   // Production: Add Vercel frontend URL from environment variable
