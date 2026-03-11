@@ -13,12 +13,13 @@ import ReportsSection from "../components/Dashboard/ReportsSection";
 import AccountSection from "../components/Dashboard/AccountSection";
 import DashboardModal from "../components/Dashboard/DashboardModal";
 import MemberDetailsModal from "../components/Dashboard/MemberDetailsModal";
+import PhoneInput from "../components/PhoneInput/PhoneInput";
 import * as ds from "../services/dashboardService";
 import "../css/dashboard.css";
 
 const MENU = ["Dashboard", "Members", "Subscriptions", "Invoices", "Reports", "Account", "Logout"];
 
-const sanitizePhone = (val) => String(val || "").replace(/[^0-9]/g, "");
+
 
 const validateMemberForm = (f, isEdit = false) => {
   if (!f.name?.trim()) return "Name is required";
@@ -63,6 +64,7 @@ const AdminDashboard = () => {
     email: "",
     password: "",
     mobile: "",
+    mobileDial: "+91",
     companyName: "",
     subscriptionPlanId: "",
     startDate: "",
@@ -187,6 +189,7 @@ const AdminDashboard = () => {
       email: "",
       password: "",
       mobile: "",
+      mobileDial: "+91",
       companyName: "",
       subscriptionPlanId: "",
       startDate: "",
@@ -209,7 +212,9 @@ const AdminDashboard = () => {
         name: memberForm.name.trim(),
         email: memberForm.email.trim(),
         password: memberForm.password,
-        mobile: sanitizePhone(memberForm.mobile),
+        mobile: memberForm.mobile
+          ? (memberForm.mobileDial || "+91") + memberForm.mobile
+          : "",
         companyName: (memberForm.companyName || "").trim(),
         subscriptionPlanId: memberForm.subscriptionPlanId,
         startDate: memberForm.startDate || new Date().toISOString().slice(0, 10),
@@ -229,11 +234,18 @@ const AdminDashboard = () => {
   const handleEditMember = (id) => {
     const m = members.find((x) => String(x._id || x.userId || "") === String(id));
     if (!m) return;
+    // When editing, the stored mobile may already include a dial code
+    // (e.g. "+919876543210"). Split it back into dial+digits.
+    const storedMobile = m.mobile || "";
+    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
+    const parsedDial = dialMatch ? dialMatch[1] : "+91";
+    const parsedDigits = dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, "");
     setMemberForm({
       name: m.name || "",
       email: m.email || "",
       password: "",
-      mobile: m.mobile || "",
+      mobile: parsedDigits,
+      mobileDial: parsedDial,
       companyName: m.companyName || "",
       subscriptionPlanId: "",
       startDate: "",
@@ -285,12 +297,14 @@ const AdminDashboard = () => {
     const payload = {};
     const trimmedName = (memberForm.name || "").trim();
     const trimmedEmail = (memberForm.email || "").trim();
-    const trimmedMobile = sanitizePhone(memberForm.mobile || "");
+    const fullMobile = memberForm.mobile
+      ? (memberForm.mobileDial || "+91") + memberForm.mobile
+      : "";
     const trimmedCompany = (memberForm.companyName || "").trim();
 
     if (trimmedName !== (originalMember.name || "")) payload.name = trimmedName;
     if (trimmedEmail !== (originalMember.email || "")) payload.email = trimmedEmail;
-    if (trimmedMobile !== (originalMember.mobile || "")) payload.mobile = trimmedMobile;
+    if (fullMobile !== (originalMember.mobile || "")) payload.mobile = fullMobile;
     if (trimmedCompany !== (originalMember.companyName || "")) payload.companyName = trimmedCompany;
     if (memberForm.password?.trim()) payload.password = memberForm.password;
 
@@ -780,7 +794,15 @@ const AdminDashboard = () => {
             )}
             <div className="sa-form-field">
               <label className="sa-form-label">Phone</label>
-              <input className="sa-form-input" value={memberForm.mobile} onChange={(e) => setMemberForm({ ...memberForm, mobile: sanitizePhone(e.target.value) })} inputMode="numeric" />
+              <PhoneInput
+                value={memberForm.mobile}
+                dialCode={memberForm.mobileDial}
+                onChange={(digits, dial) =>
+                  setMemberForm({ ...memberForm, mobile: digits, mobileDial: dial })
+                }
+                placeholder="Enter phone number"
+                id="memberForm-mobile"
+              />
             </div>
           </div>
 

@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/Dashboard/MainLayout";
 import DashboardModal from "../components/Dashboard/DashboardModal";
+import PhoneInput from "../components/PhoneInput/PhoneInput";
 import * as ds from "../services/dashboardService";
 import "../css/dashboard.css";
 
@@ -22,7 +23,7 @@ const formatDate = (val) => {
   return isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 };
 
-const sanitizePhone = (val) => String(val || "").replace(/[^0-9]/g, "");
+
 
 const MemberDashboard = () => {
   const { user, logout } = useAuth();
@@ -122,9 +123,8 @@ const MemberDashboard = () => {
                 <span className="sa-memdash-sub-value">{formatDate(currentPlan.nextDueDate)}</span>
               </div>
               <span
-                className={`sa-badge sa-badge-invoice-status ${
-                  (currentPlan.status || "").toLowerCase() === "paid" ? "sa-badge-paid" : "sa-badge-unpaid"
-                }`}
+                className={`sa-badge sa-badge-invoice-status ${(currentPlan.status || "").toLowerCase() === "paid" ? "sa-badge-paid" : "sa-badge-unpaid"
+                  }`}
               >
                 {currentPlan.status ?? "Unpaid"}
               </span>
@@ -185,9 +185,8 @@ const MemberDashboard = () => {
                     <td>${(inv.amount ?? 0).toLocaleString()}</td>
                     <td>
                       <span
-                        className={`sa-badge sa-badge-invoice-status ${
-                          (inv.status || "").toLowerCase() === "paid" ? "sa-badge-paid" : "sa-badge-unpaid"
-                        }`}
+                        className={`sa-badge sa-badge-invoice-status ${(inv.status || "").toLowerCase() === "paid" ? "sa-badge-paid" : "sa-badge-unpaid"
+                          }`}
                       >
                         {inv.status ?? "Unpaid"}
                       </span>
@@ -265,6 +264,7 @@ const MemberAccountSection = ({ member, onSaved }) => {
     name: "",
     email: "",
     mobile: "",
+    mobileDial: "+91",
     companyName: "",
   });
   const [formErr, setFormErr] = useState("");
@@ -272,19 +272,26 @@ const MemberAccountSection = ({ member, onSaved }) => {
 
   useEffect(() => {
     setProfile(member);
+    // Parse stored mobile back into dial code + digits for editing
+    const storedMobile = member?.mobile ?? "";
+    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
     setForm({
       name: member?.name ?? "",
       email: member?.email ?? "",
-      mobile: member?.mobile ?? "",
+      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
+      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: member?.companyName ?? "",
     });
   }, [member]);
 
   const handleEdit = () => {
+    const storedMobile = profile?.mobile ?? "";
+    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
     setForm({
       name: profile?.name ?? "",
       email: profile?.email ?? "",
-      mobile: profile?.mobile ?? "",
+      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
+      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: profile?.companyName ?? "",
     });
     setFormErr("");
@@ -316,7 +323,7 @@ const MemberAccountSection = ({ member, onSaved }) => {
       const { data } = await ds.updateMemberProfile({
         name: form.name.trim(),
         email: form.email.trim(),
-        mobile: sanitizePhone(form.mobile),
+        mobile: form.mobile ? (form.mobileDial || "+91") + form.mobile : "",
         companyName: (form.companyName || "").trim(),
       });
       setProfile(data);
@@ -368,7 +375,7 @@ const MemberAccountSection = ({ member, onSaved }) => {
                   required
                 />
               </div>
-              <div className="sa-memdash-account-field">
+              {/* <div className="sa-memdash-account-field">
                 <label className="sa-memdash-account-label">Member Code (read-only)</label>
                 <input
                   className="sa-memdash-account-input"
@@ -377,7 +384,7 @@ const MemberAccountSection = ({ member, onSaved }) => {
                   disabled
                   style={{ background: "#f8fafc", cursor: "default" }}
                 />
-              </div>
+              </div> */}
               <div className="sa-memdash-account-field">
                 <label className="sa-memdash-account-label">Email</label>
                 <input
@@ -390,11 +397,14 @@ const MemberAccountSection = ({ member, onSaved }) => {
               </div>
               <div className="sa-memdash-account-field">
                 <label className="sa-memdash-account-label">Mobile</label>
-                <input
-                  className="sa-memdash-account-input"
+                <PhoneInput
                   value={form.mobile}
-                  onChange={(e) => setForm({ ...form, mobile: sanitizePhone(e.target.value) })}
-                  inputMode="numeric"
+                  dialCode={form.mobileDial}
+                  onChange={(digits, dial) =>
+                    setForm({ ...form, mobile: digits, mobileDial: dial })
+                  }
+                  placeholder="Enter phone number"
+                  id="member-account-mobile"
                 />
               </div>
               <div className="sa-memdash-account-field sa-memdash-account-field-full">

@@ -1,0 +1,391 @@
+/* ============================================================
+   phi-* namespace  –  Universal Phone-Input Component Styles
+   All class names are prefixed with "phi-" to avoid conflicts
+   with any existing stylesheet on the site.
+   ============================================================ */
+
+/* ──────────────────────────────────────────────────────────────
+   STACKING-CONTEXT ESCAPE FIXES
+
+   Problem: The modal overlay uses `backdrop-filter: blur()` which
+   creates a new stacking context. Any z-index set on a descendant
+   is evaluated WITHIN that context — making it impossible to
+   layer above the overlay regardless of the z-index value.
+   Additionally, .sa-modal has `overflow: hidden` which clips
+   any absolutely-positioned descendant that extends beyond the
+   modal box.
+
+   Solution:
+   1. Give .phi-wrapper overflow:visible so the trigger area is
+      never clipped by ancestor modal overflow chains.
+   2. Force the overflow chain of the modal wrappers to visible
+      when they contain a phi-wrapper (scoped — no side-effects).
+   3. Switch .phi-dropdown to position:fixed — fixed elements are
+      positioned relative to the viewport and are completely
+      immune to every ancestral stacking context and overflow.
+   4. Use the CSS Anchor Positioning API (Chrome 125+) for
+      pixel-perfect alignment, with a reliable visual fallback
+      for all other browsers.
+   ────────────────────────────────────────────────────────────── */
+
+/*
+   Step 1 – Allow overflow to escape the modal chain.
+   These selectors only *add* overflow:visible to the specific
+   element that contains our widget — no layout change occurs on
+   the modal itself because .sa-modal-body has no scroll content
+   that relies on overflow:hidden.
+*/
+.sa-modal:has(.phi-wrapper),
+.sa-modal-form:has(.phi-wrapper),
+.sa-modal-body:has(.phi-wrapper),
+.sa-modal-scroll:has(.phi-wrapper) {
+  overflow: visible;
+}
+
+/* ── Root wrapper ── */
+.phi-wrapper {
+  display: flex;
+  align-items: stretch;
+  /* Must be visible so the fixed dropdown is not clipped locally */
+  overflow: visible;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  gap: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   DIAL-CODE BUTTON
+   ────────────────────────────────────────────────────────────── */
+.phi-dial-wrap {
+  position: relative;
+  flex-shrink: 0;
+  /*
+    Step 2 – Register this element as a CSS anchor for modern browsers.
+    The dropdown will anchor itself to this element's bottom-left edge
+    without any JavaScript coordinate calculation.
+  */
+  anchor-name: --phi-dial-anchor;
+}
+
+.phi-dial-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  padding: 0 10px 0 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  transition: background 0.18s, border-color 0.18s;
+  outline: none;
+  user-select: none;
+}
+
+.phi-dial-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.phi-dial-btn:focus-visible {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  z-index: 1;
+}
+
+.phi-dial-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+.phi-flag {
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.phi-dial-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  min-width: 32px;
+  text-align: left;
+}
+
+.phi-chevron {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: 2px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.phi-chevron-open {
+  transform: rotate(180deg);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   DROPDOWN PANEL
+
+   KEY: position:fixed escapes ALL stacking contexts —
+   including ones created by backdrop-filter, opacity, transform,
+   will-change, isolation, or z-index+position on any ancestor.
+   The dropdown is now positioned relative to the VIEWPORT, so
+   no modal, blur, or overflow on any parent can trap or clip it.
+   ────────────────────────────────────────────────────────────── */
+.phi-dropdown {
+  /*
+    position:fixed → viewport-relative, stacking-context-immune.
+    This is the only CSS property that guarantees escape from a
+    backdrop-filter stacking context without modifying HTML.
+  */
+  position: fixed;
+
+  /*
+    CSS Anchor Positioning (Chrome 125+ / Safari 18+):
+    Snap the dropdown's top-left to the anchor's bottom-left.
+    inset-block-start aligns to the bottom edge of the trigger
+    button; inset-inline-start aligns to its left edge.
+  */
+  top: anchor(--phi-dial-anchor bottom);
+  left: anchor(--phi-dial-anchor left);
+  margin-top: 6px;
+
+  /*
+    Fallback for browsers without Anchor Positioning support.
+    Centers near the viewport — visually functional, not pixel-
+    perfect relative to the button, but never hidden behind a modal.
+    Anchor Positioning (@supports) overrides this when available.
+  */
+  z-index: 2147483647; /* max safe z-index — sits above everything */
+  min-width: 260px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  animation: phi-drop-in 0.15s ease;
+}
+
+/*
+  Browsers WITHOUT Anchor Positioning: provide a clean positional
+  fallback. `top` and `left` are ignored by anchor-aware browsers
+  because the anchor() function wins; for legacy browsers they
+  are the actual position values.
+*/
+@supports not (top: anchor(--x bottom)) {
+  .phi-dropdown {
+    /*
+      Re-declare as absolute here so the dropdown still aligns
+      relative to .phi-dial-wrap (its nearest positioned ancestor)
+      in browsers that don't support anchor positioning. The fixed
+      stacking-context escape is only needed for browsers that have
+      backdrop-filter stacking issues — which are the same browsers
+      that support anchor positioning, so this safe fallback works.
+    */
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    margin-top: 0;
+  }
+}
+
+@keyframes phi-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Search ── */
+.phi-search-wrap {
+  padding: 10px 10px 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.phi-search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #f8fafc;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.phi-search-input::placeholder {
+  color: #94a3b8;
+}
+
+.phi-search-input:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── List ── */
+.phi-country-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 220px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.phi-country-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.phi-country-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.phi-country-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+/* ── Country item ── */
+.phi-country-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+  outline: none;
+}
+
+.phi-country-item:hover,
+.phi-country-item:focus-visible {
+  background: #f1f5f9;
+}
+
+.phi-country-selected {
+  background: #eff6ff;
+}
+
+.phi-country-selected:hover {
+  background: #dbeafe;
+}
+
+.phi-item-flag {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.phi-item-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.phi-item-dial {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.phi-no-results {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   PHONE NUMBER INPUT
+   ────────────────────────────────────────────────────────────── */
+.phi-number-input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid #e2e8f0;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  /* Reset width set by host forms like .sa-form-input { width: 100% } */
+  width: auto;
+}
+
+.phi-number-input::placeholder {
+  color: #94a3b8;
+}
+
+.phi-number-input:hover:not(:disabled) {
+  border-color: #cbd5e1;
+}
+
+.phi-number-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  /* Ensure focus ring doesn't conflict with the button's border */
+  position: relative;
+  z-index: 1;
+}
+
+.phi-number-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .phi-dial-btn {
+    padding: 0 8px 0 10px;
+    gap: 3px;
+  }
+
+  .phi-dial-code {
+    font-size: 12px;
+    min-width: 28px;
+  }
+
+  .phi-flag {
+    font-size: 16px;
+  }
+
+  .phi-number-input {
+    font-size: 13px;
+    padding: 0 10px;
+  }
+
+  .phi-dropdown {
+    min-width: 220px;
+  }
+}

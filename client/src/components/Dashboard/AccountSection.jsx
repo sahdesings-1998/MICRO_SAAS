@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiUser, FiEdit2 } from "react-icons/fi";
 import * as ds from "../../services/dashboardService";
+import PhoneInput from "../PhoneInput/PhoneInput";
 import "../../css/dashboard.css";
 
 const formatDate = (val) => {
@@ -9,13 +10,13 @@ const formatDate = (val) => {
   return isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 };
 
-const sanitizePhone = (val) => String(val || "").replace(/[^0-9]/g, "");
+
 
 const AccountSection = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", mobile: "", companyName: "" });
+  const [form, setForm] = useState({ name: "", email: "", mobile: "", mobileDial: "+91", companyName: "" });
   const [formErr, setFormErr] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -24,10 +25,14 @@ const AccountSection = () => {
     try {
       const { data } = await ds.getAdminProfile();
       setProfile(data);
+      // Parse stored mobile back into dial+digits for edit form
+      const storedMobile = data?.mobile ?? "";
+      const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
       setForm({
         name: data?.name ?? "",
         email: data?.email ?? "",
-        mobile: data?.mobile ?? "",
+        mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
+        mobileDial: dialMatch ? dialMatch[1] : "+91",
         companyName: data?.companyName ?? "",
       });
     } catch {
@@ -41,10 +46,13 @@ const AccountSection = () => {
   }, []);
 
   const handleEdit = () => {
+    const storedMobile = profile?.mobile ?? "";
+    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
     setForm({
       name: profile?.name ?? "",
       email: profile?.email ?? "",
-      mobile: profile?.mobile ?? "",
+      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
+      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: profile?.companyName ?? "",
     });
     setFormErr("");
@@ -76,7 +84,7 @@ const AccountSection = () => {
       const { data } = await ds.updateAdminProfile({
         name: form.name.trim(),
         email: form.email.trim(),
-        mobile: sanitizePhone(form.mobile),
+        mobile: form.mobile ? (form.mobileDial || "+91") + form.mobile : "",
         companyName: (form.companyName || "").trim(),
       });
       setProfile(data);
@@ -154,11 +162,14 @@ const AccountSection = () => {
               </div>
               <div className="sa-account-form-field">
                 <label className="sa-account-form-label">Mobile</label>
-                <input
-                  className="sa-account-form-input"
+                <PhoneInput
                   value={form.mobile}
-                  onChange={(e) => setForm({ ...form, mobile: sanitizePhone(e.target.value) })}
-                  inputMode="numeric"
+                  dialCode={form.mobileDial}
+                  onChange={(digits, dial) =>
+                    setForm({ ...form, mobile: digits, mobileDial: dial })
+                  }
+                  placeholder="Enter phone number"
+                  id="admin-account-mobile"
                 />
               </div>
               <div className="sa-account-form-field sa-account-form-field-full">

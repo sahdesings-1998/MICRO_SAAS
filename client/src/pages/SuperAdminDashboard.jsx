@@ -10,12 +10,13 @@ import ClientDetailsModal from "../components/Dashboard/ClientDetailsModal";
 import SuperAdminReportsSection from "../components/Dashboard/SuperAdminReportsSection";
 import SuperAdminSettings from "../components/Dashboard/SuperAdminSettings";
 import DashboardModal from "../components/Dashboard/DashboardModal";
+import PhoneInput from "../components/PhoneInput/PhoneInput";
 import * as ds from "../services/dashboardService";
 import "../css/dashboard.css";
 
 const MENU = ["Dashboard", "Clients", "Reports", "Settings", "Logout"];
 
-const sanitizePhone = (val) => String(val || "").replace(/[^0-9]/g, "");
+
 
 const validateForm = (f) => {
   if (!f.name?.trim()) return "Name is required";
@@ -36,12 +37,12 @@ const SuperAdminDashboard = () => {
   const [adminsLoading, setAdminsLoading] = useState(false);
 
   const [showAddAdmin, setShowAddAdmin] = useState(false);
-  const [adminForm, setAdminForm] = useState({ name: "", email: "", password: "", mobile: "" });
+  const [adminForm, setAdminForm] = useState({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
   const [showAdminPw, setShowAdminPw] = useState(false);
   const [adminFormErr, setAdminFormErr] = useState("");
 
   const [showAddSuperAdmin, setShowAddSuperAdmin] = useState(false);
-  const [saForm, setSaForm] = useState({ name: "", email: "", password: "", mobile: "" });
+  const [saForm, setSaForm] = useState({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
   const [showSaPw, setShowSaPw] = useState(false);
   const [saFormErr, setSaFormErr] = useState("");
 
@@ -102,9 +103,12 @@ const SuperAdminDashboard = () => {
     if (err && !adminForm.password) { setAdminFormErr("Password is required"); return; }
     if (err) { setAdminFormErr(err); return; }
     try {
-      await ds.createAdmin(adminForm);
+      await ds.createAdmin({
+        ...adminForm,
+        mobile: adminForm.mobileDial + adminForm.mobile,
+      });
       setShowAddAdmin(false);
-      setAdminForm({ name: "", email: "", password: "", mobile: "" });
+      setAdminForm({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
       setAdminFormErr("");
       loadAdmins();
       loadStats();
@@ -155,9 +159,12 @@ const SuperAdminDashboard = () => {
     const err = validateForm(saForm);
     if (err) { setSaFormErr(err); return; }
     try {
-      await ds.createSuperAdmin(saForm);
+      await ds.createSuperAdmin({
+        ...saForm,
+        mobile: saForm.mobileDial + saForm.mobile,
+      });
       setShowAddSuperAdmin(false);
-      setSaForm({ name: "", email: "", password: "", mobile: "" });
+      setSaForm({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
       setSaFormErr("");
       settingsRefreshRef.current?.();
     } catch (ex) {
@@ -257,7 +264,15 @@ const SuperAdminDashboard = () => {
             </div>
             <div className="sa-form-field">
               <label className="sa-form-label">Mobile</label>
-              <input className="sa-form-input" value={adminForm.mobile} onChange={(e) => setAdminForm({ ...adminForm, mobile: sanitizePhone(e.target.value) })} inputMode="numeric" />
+              <PhoneInput
+                value={adminForm.mobile}
+                dialCode={adminForm.mobileDial}
+                onChange={(digits, dial) =>
+                  setAdminForm({ ...adminForm, mobile: digits, mobileDial: dial })
+                }
+                placeholder="Enter mobile number"
+                id="adminForm-mobile"
+              />
             </div>
           </div>
           {adminFormErr && <p className="sa-form-error">{adminFormErr}</p>}
@@ -290,7 +305,15 @@ const SuperAdminDashboard = () => {
             </div>
             <div className="sa-form-field">
               <label className="sa-form-label">Mobile</label>
-              <input className="sa-form-input" value={saForm.mobile} onChange={(e) => setSaForm({ ...saForm, mobile: sanitizePhone(e.target.value) })} inputMode="numeric" />
+              <PhoneInput
+                value={saForm.mobile}
+                dialCode={saForm.mobileDial}
+                onChange={(digits, dial) =>
+                  setSaForm({ ...saForm, mobile: digits, mobileDial: dial })
+                }
+                placeholder="Enter mobile number"
+                id="saForm-mobile"
+              />
             </div>
           </div>
           {saFormErr && <p className="sa-form-error">{saFormErr}</p>}
