@@ -14,6 +14,7 @@ import AccountSection from "../components/Dashboard/AccountSection";
 import DashboardModal from "../components/Dashboard/DashboardModal";
 import MemberDetailsModal from "../components/Dashboard/MemberDetailsModal";
 import PhoneInput from "../components/PhoneInput/PhoneInput";
+import { parseE164Phone, getDefaultDialCode } from "../utils/phoneParser";
 import * as ds from "../services/dashboardService";
 import "../css/dashboard.css";
 
@@ -64,7 +65,7 @@ const AdminDashboard = () => {
     email: "",
     password: "",
     mobile: "",
-    mobileDial: "+91",
+    mobileDial: getDefaultDialCode(),
     companyName: "",
     subscriptionPlanId: "",
     startDate: "",
@@ -189,7 +190,7 @@ const AdminDashboard = () => {
       email: "",
       password: "",
       mobile: "",
-      mobileDial: "+91",
+      mobileDial: getDefaultDialCode(),
       companyName: "",
       subscriptionPlanId: "",
       startDate: "",
@@ -198,7 +199,6 @@ const AdminDashboard = () => {
     setEditingMemberId(null);
     setMemberFormErr("");
   };
-
   const handleCreateMember = async (e) => {
     e.preventDefault();
     const err = validateMemberForm({ ...memberForm, password: memberForm.password || "dummy123" }, false);
@@ -234,18 +234,17 @@ const AdminDashboard = () => {
   const handleEditMember = (id) => {
     const m = members.find((x) => String(x._id || x.userId || "") === String(id));
     if (!m) return;
-    // When editing, the stored mobile may already include a dial code
-    // (e.g. "+919876543210"). Split it back into dial+digits.
+    
+    // Parse the E.164 format phone number to extract dial code and digits
     const storedMobile = m.mobile || "";
-    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
-    const parsedDial = dialMatch ? dialMatch[1] : "+91";
-    const parsedDigits = dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, "");
+    const { dialCode, digits } = parseE164Phone(storedMobile);
+    
     setMemberForm({
       name: m.name || "",
       email: m.email || "",
       password: "",
-      mobile: parsedDigits,
-      mobileDial: parsedDial,
+      mobile: digits,
+      mobileDial: dialCode,
       companyName: m.companyName || "",
       subscriptionPlanId: "",
       startDate: "",

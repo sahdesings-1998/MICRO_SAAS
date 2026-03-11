@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FiUser, FiEdit2 } from "react-icons/fi";
 import * as ds from "../../services/dashboardService";
 import PhoneInput from "../PhoneInput/PhoneInput";
+import { usePhoneInput } from "../../hooks";
 import "../../css/dashboard.css";
 
 const formatDate = (val) => {
@@ -16,23 +17,37 @@ const AccountSection = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", mobile: "", mobileDial: "+91", companyName: "" });
   const [formErr, setFormErr] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Initialize phone input hook
+  const {
+    mobile,
+    mobileDial,
+    handleMobileChange,
+    handleDialChange,
+    getE164,
+    isValid: isPhoneValid,
+    setFromE164
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
+
+  // Form for other fields
+  const [form, setForm] = useState({ name: "", email: "", companyName: "" });
 
   const loadProfile = async () => {
     setLoading(true);
     try {
       const { data } = await ds.getAdminProfile();
       setProfile(data);
-      // Parse stored mobile back into dial+digits for edit form
-      const storedMobile = data?.mobile ?? "";
-      const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
+      // Parse stored mobile (E.164 format) into form fields
+      if (data?.mobile) {
+        setFromE164(data.mobile);
+      }
       setForm({
         name: data?.name ?? "",
         email: data?.email ?? "",
-        mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
-        mobileDial: dialMatch ? dialMatch[1] : "+91",
         companyName: data?.companyName ?? "",
       });
     } catch {
@@ -46,15 +61,15 @@ const AccountSection = () => {
   }, []);
 
   const handleEdit = () => {
-    const storedMobile = profile?.mobile ?? "";
-    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
     setForm({
       name: profile?.name ?? "",
       email: profile?.email ?? "",
-      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
-      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: profile?.companyName ?? "",
     });
+    // Parse stored mobile into phone input fields
+    if (profile?.mobile) {
+      setFromE164(profile.mobile);
+    }
     setFormErr("");
     setEditing(true);
   };
@@ -78,13 +93,19 @@ const AccountSection = () => {
       setFormErr("Invalid email");
       return;
     }
+    if (!isPhoneValid) {
+      setFormErr("Invalid phone number");
+      return;
+    }
     setFormErr("");
     setSaving(true);
     try {
+      // Get E.164 format phone number
+      const e164Phone = getE164();
       const { data } = await ds.updateAdminProfile({
         name: form.name.trim(),
         email: form.email.trim(),
-        mobile: form.mobile ? (form.mobileDial || "+91") + form.mobile : "",
+        mobile: e164Phone,
         companyName: (form.companyName || "").trim(),
       });
       setProfile(data);
@@ -163,11 +184,9 @@ const AccountSection = () => {
               <div className="sa-account-form-field">
                 <label className="sa-account-form-label">Mobile</label>
                 <PhoneInput
-                  value={form.mobile}
-                  dialCode={form.mobileDial}
-                  onChange={(digits, dial) =>
-                    setForm({ ...form, mobile: digits, mobileDial: dial })
-                  }
+                  value={mobile}
+                  dialCode={mobileDial}
+                  onChange={handleMobileChange}
                   placeholder="Enter phone number"
                   id="admin-account-mobile"
                 />

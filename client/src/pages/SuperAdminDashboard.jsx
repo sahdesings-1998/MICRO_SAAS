@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
+import { usePhoneInput } from "../hooks";
 import MainLayout from "../components/Dashboard/MainLayout";
 import DashboardCards from "../components/Dashboard/DashboardCards";
 import ClientsChart from "../components/Dashboard/ClientsChart";
@@ -37,14 +38,36 @@ const SuperAdminDashboard = () => {
   const [adminsLoading, setAdminsLoading] = useState(false);
 
   const [showAddAdmin, setShowAddAdmin] = useState(false);
-  const [adminForm, setAdminForm] = useState({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
+  const [adminForm, setAdminForm] = useState({ name: "", email: "", password: "" });
   const [showAdminPw, setShowAdminPw] = useState(false);
   const [adminFormErr, setAdminFormErr] = useState("");
 
+  // Admin phone input hook
+  const {
+    mobile: adminMobile,
+    mobileDial: adminMobileDial,
+    handleMobileChange: handleAdminMobileChange,
+    getE164: getAdminE164,
+    isValid: isAdminPhoneValid
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
+
   const [showAddSuperAdmin, setShowAddSuperAdmin] = useState(false);
-  const [saForm, setSaForm] = useState({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
+  const [saForm, setSaForm] = useState({ name: "", email: "", password: "" });
   const [showSaPw, setShowSaPw] = useState(false);
   const [saFormErr, setSaFormErr] = useState("");
+
+  // Super Admin phone input hook
+  const {
+    mobile: saMobile,
+    mobileDial: saMobileDial,
+    handleMobileChange: handleSAMobileChange,
+    getE164: getSAE164,
+    isValid: isSAPhoneValid
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
 
   const [showLogout, setShowLogout] = useState(false);
   const [viewClientId, setViewClientId] = useState(null);
@@ -102,13 +125,15 @@ const SuperAdminDashboard = () => {
     const err = validateForm({ ...adminForm, password: adminForm.password || "x" });
     if (err && !adminForm.password) { setAdminFormErr("Password is required"); return; }
     if (err) { setAdminFormErr(err); return; }
+    if (!isAdminPhoneValid) { setAdminFormErr("Invalid phone number"); return; }
     try {
+      const e164Phone = getAdminE164();
       await ds.createAdmin({
         ...adminForm,
-        mobile: adminForm.mobileDial + adminForm.mobile,
+        mobile: e164Phone,
       });
       setShowAddAdmin(false);
-      setAdminForm({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
+      setAdminForm({ name: "", email: "", password: "" });
       setAdminFormErr("");
       loadAdmins();
       loadStats();
@@ -158,13 +183,15 @@ const SuperAdminDashboard = () => {
     e.preventDefault();
     const err = validateForm(saForm);
     if (err) { setSaFormErr(err); return; }
+    if (!isSAPhoneValid) { setSaFormErr("Invalid phone number"); return; }
     try {
+      const e164Phone = getSAE164();
       await ds.createSuperAdmin({
         ...saForm,
-        mobile: saForm.mobileDial + saForm.mobile,
+        mobile: e164Phone,
       });
       setShowAddSuperAdmin(false);
-      setSaForm({ name: "", email: "", password: "", mobile: "", mobileDial: "+91" });
+      setSaForm({ name: "", email: "", password: "" });
       setSaFormErr("");
       settingsRefreshRef.current?.();
     } catch (ex) {
@@ -265,11 +292,9 @@ const SuperAdminDashboard = () => {
             <div className="sa-form-field">
               <label className="sa-form-label">Mobile</label>
               <PhoneInput
-                value={adminForm.mobile}
-                dialCode={adminForm.mobileDial}
-                onChange={(digits, dial) =>
-                  setAdminForm({ ...adminForm, mobile: digits, mobileDial: dial })
-                }
+                value={adminMobile}
+                dialCode={adminMobileDial}
+                onChange={handleAdminMobileChange}
                 placeholder="Enter mobile number"
                 id="adminForm-mobile"
               />
@@ -306,11 +331,9 @@ const SuperAdminDashboard = () => {
             <div className="sa-form-field">
               <label className="sa-form-label">Mobile</label>
               <PhoneInput
-                value={saForm.mobile}
-                dialCode={saForm.mobileDial}
-                onChange={(digits, dial) =>
-                  setSaForm({ ...saForm, mobile: digits, mobileDial: dial })
-                }
+                value={saMobile}
+                dialCode={saMobileDial}
+                onChange={handleSAMobileChange}
                 placeholder="Enter mobile number"
                 id="saForm-mobile"
               />

@@ -76,6 +76,11 @@ const PhoneInput = ({
   const dropRef = useRef(null);
   const searchRef = useRef(null);
 
+  // Sync selectedDial when dialCode prop changes (e.g., when editing a member)
+  useEffect(() => {
+    setSelectedDial(dialCode);
+  }, [dialCode]);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {

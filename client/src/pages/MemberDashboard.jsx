@@ -9,6 +9,7 @@ import {
   FiEdit2,
 } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
+import { usePhoneInput } from "../hooks";
 import MainLayout from "../components/Dashboard/MainLayout";
 import DashboardModal from "../components/Dashboard/DashboardModal";
 import PhoneInput from "../components/PhoneInput/PhoneInput";
@@ -32,6 +33,23 @@ const MemberDashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLogout, setShowLogout] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [editFormErr, setEditFormErr] = useState("");
+  const [editFormData, setEditFormData] = useState({ name: "", email: "", companyName: "" });
+  const [editSaving, setEditSaving] = useState(false);
+
+  // Phone input hook for edit modal
+  const {
+    mobile: editMobile,
+    mobileDial: editMobileDial,
+    handleMobileChange: handleEditMobileChange,
+    getE164: getEditE164,
+    isValid: isEditPhoneValid,
+    setFromE164: setEditFromE164
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -61,6 +79,64 @@ const MemberDashboard = () => {
     navigate("/login");
   };
 
+  const openEditMemberModal = () => {
+    if (!data?.member) return;
+    setEditingMember(data.member);
+    setEditFormData({
+      name: data.member.name ?? "",
+      email: data.member.email ?? "",
+      companyName: data.member.companyName ?? ""
+    });
+    if (data.member.mobile) {
+      setEditFromE164(data.member.mobile);
+    }
+    setEditFormErr("");
+    setShowEditModal(true);
+  };
+
+  const closeEditMemberModal = () => {
+    setShowEditModal(false);
+    setEditingMember(null);
+    setEditFormErr("");
+    setEditFormData({ name: "", email: "", companyName: "" });
+  };
+
+  const handleEditMemberSave = async (e) => {
+    e.preventDefault();
+    if (!editFormData.name?.trim()) {
+      setEditFormErr("Name is required");
+      return;
+    }
+    if (!editFormData.email?.trim()) {
+      setEditFormErr("Email is required");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(editFormData.email)) {
+      setEditFormErr("Invalid email format");
+      return;
+    }
+    if (!isEditPhoneValid) {
+      setEditFormErr("Invalid phone number");
+      return;
+    }
+    setEditFormErr("");
+    setEditSaving(true);
+    try {
+      const e164Phone = getEditE164();
+      await ds.updateMemberProfile({
+        name: editFormData.name.trim(),
+        email: editFormData.email.trim(),
+        mobile: e164Phone,
+        companyName: (editFormData.companyName || "").trim()
+      });
+      closeEditMemberModal();
+      loadData();
+    } catch (ex) {
+      setEditFormErr(ex?.response?.data?.message || "Failed to update member");
+    }
+    setEditSaving(false);
+  };
+
   const member = data?.member || {};
   const invoices = Array.isArray(data?.invoices) ? data.invoices : [];
   const totalInvoices = data?.totalInvoices ?? 0;
@@ -79,6 +155,36 @@ const MemberDashboard = () => {
     <div className="sa-member-dashboard">
       {/* <h2 className="sa-member-page-title">Dashboard</h2>
       <p className="sa-member-page-subtitle">Overview of your membership and payments</p> */}
+
+      {/* Member Info Section with Edit Button */}
+      <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", backgroundColor: "#f8fafc", borderRadius: 8, border: "1px solid #e2e8f0" }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "#1e293b" }}>{member?.name || "Member"}</h3>
+          <p style={{ margin: "4px 0 0 0", fontSize: 13, color: "#64748b" }}>Member ID: {member?.memberCode || "—"}</p>
+        </div>
+        <button
+          type="button"
+          onClick={openEditMemberModal}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 16px",
+            backgroundColor: "#3b82f6",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: "pointer",
+            transition: "background-color 0.2s"
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = "#2563eb"}
+          onMouseOut={(e) => e.target.style.backgroundColor = "#3b82f6"}
+        >
+          <FiEdit2 size={16} /> Edit Member
+        </button>
+      </div>
 
       <div className="sa-cards-grid sa-dashboard-cards-grid sa-member-cards">
         {summaryCards.map((card) => {
@@ -253,6 +359,88 @@ const MemberDashboard = () => {
           </button>
         </div>
       </DashboardModal>
+
+      {/* Edit Member Modal */}
+      <DashboardModal
+        open={showEditModal}
+        title="Edit Member Details"
+        onClose={closeEditMemberModal}
+        size="form"
+      >
+        <form onSubmit={handleEditMemberSave}>
+          <div className="sa-form-row">
+            <div className="sa-form-field">
+              <label className="sa-form-label">Name *</label>
+              <input
+                className="sa-form-input"
+                type="text"
+                value={editFormData.name}
+                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                placeholder="Enter member name"
+                required
+              />
+            </div>
+            <div className="sa-form-field">
+              <label className="sa-form-label">Email *</label>
+              <input
+                className="sa-form-input"
+                type="email"
+                value={editFormData.email}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                placeholder="Enter email address"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="sa-form-row">
+            <div className="sa-form-field">
+              <label className="sa-form-label">Mobile Number *</label>
+              <PhoneInput
+                value={editMobile}
+                dialCode={editMobileDial}
+                onChange={handleEditMobileChange}
+                placeholder="Enter phone number"
+                id="edit-member-mobile"
+              />
+            </div>
+            <div className="sa-form-field">
+              <label className="sa-form-label">Company Name</label>
+              <input
+                className="sa-form-input"
+                type="text"
+                value={editFormData.companyName}
+                onChange={(e) => setEditFormData({ ...editFormData, companyName: e.target.value })}
+                placeholder="Enter company name"
+              />
+            </div>
+          </div>
+
+          {editFormErr && (
+            <p className="sa-form-error" style={{ marginTop: 16 }}>
+              {editFormErr}
+            </p>
+          )}
+
+          <div className="sa-form-actions" style={{ marginTop: 24 }}>
+            <button
+              type="button"
+              className="sa-btn sa-btn-outline"
+              onClick={closeEditMemberModal}
+              disabled={editSaving}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="sa-btn sa-btn-primary"
+              disabled={editSaving || !isEditPhoneValid}
+            >
+              {editSaving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </form>
+      </DashboardModal>
     </MainLayout>
   );
 };
@@ -260,40 +448,44 @@ const MemberDashboard = () => {
 const MemberAccountSection = ({ member, onSaved }) => {
   const [profile, setProfile] = useState(member);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    mobile: "",
-    mobileDial: "+91",
-    companyName: "",
-  });
+  const [form, setForm] = useState({ name: "", email: "", companyName: "" });
   const [formErr, setFormErr] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Phone input hook for account section
+  const {
+    mobile,
+    mobileDial,
+    handleMobileChange,
+    getE164,
+    isValid: isPhoneValid,
+    setFromE164
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
+
   useEffect(() => {
     setProfile(member);
-    // Parse stored mobile back into dial code + digits for editing
-    const storedMobile = member?.mobile ?? "";
-    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
+    // Parse stored mobile (E.164) into form fields
     setForm({
       name: member?.name ?? "",
       email: member?.email ?? "",
-      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
-      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: member?.companyName ?? "",
     });
-  }, [member]);
+    if (member?.mobile) {
+      setFromE164(member.mobile);
+    }
+  }, [member, setFromE164]);
 
   const handleEdit = () => {
-    const storedMobile = profile?.mobile ?? "";
-    const dialMatch = storedMobile.match(/^(\+\d{1,4})(\d+)$/);
     setForm({
       name: profile?.name ?? "",
       email: profile?.email ?? "",
-      mobile: dialMatch ? dialMatch[2] : storedMobile.replace(/\D/g, ""),
-      mobileDial: dialMatch ? dialMatch[1] : "+91",
       companyName: profile?.companyName ?? "",
     });
+    if (profile?.mobile) {
+      setFromE164(profile.mobile);
+    }
     setFormErr("");
     setEditing(true);
   };
@@ -317,13 +509,19 @@ const MemberAccountSection = ({ member, onSaved }) => {
       setFormErr("Invalid email");
       return;
     }
+    if (!isPhoneValid) {
+      setFormErr("Invalid phone number");
+      return;
+    }
     setFormErr("");
     setSaving(true);
     try {
+      // Get E.164 format phone number
+      const e164Phone = getE164();
       const { data } = await ds.updateMemberProfile({
         name: form.name.trim(),
         email: form.email.trim(),
-        mobile: form.mobile ? (form.mobileDial || "+91") + form.mobile : "",
+        mobile: e164Phone,
         companyName: (form.companyName || "").trim(),
       });
       setProfile(data);
@@ -398,11 +596,9 @@ const MemberAccountSection = ({ member, onSaved }) => {
               <div className="sa-memdash-account-field">
                 <label className="sa-memdash-account-label">Mobile</label>
                 <PhoneInput
-                  value={form.mobile}
-                  dialCode={form.mobileDial}
-                  onChange={(digits, dial) =>
-                    setForm({ ...form, mobile: digits, mobileDial: dial })
-                  }
+                  value={mobile}
+                  dialCode={mobileDial}
+                  onChange={handleMobileChange}
                   placeholder="Enter phone number"
                   id="member-account-mobile"
                 />
