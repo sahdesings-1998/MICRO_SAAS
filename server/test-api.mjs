@@ -499,3 +499,7 @@ async function run() {
 }
 
 run().catch(console.error);
+
+// cd d:\Micro-Saas-OG\server
+// node test-api.mjs
+
