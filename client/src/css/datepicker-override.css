@@ -13,7 +13,7 @@
   --adp-font-family: inherit;
   --adp-font-size: 14px;
   --adp-border-radius: var(--sa-radius-xs, 10px);
-  --adp-box-shadow: var(--sa-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --adp-box-shadow: var(--sa-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
 }
 
 .air-datepicker-body--cell.-day-.-selected- {
