@@ -18,7 +18,7 @@ const getBaseURL = () => {
 const api = axios.create({
   baseURL: getBaseURL(),
   timeout: 30000,
-  withCredentials: false // Set to true if using cookie-based auth
+  withCredentials: true // Enable for JWT in Authorization header
 });
 
 // Request interceptor: Add auth token

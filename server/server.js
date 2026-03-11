@@ -20,28 +20,45 @@ connectDB();
 
 const app = express();
 
-// CORS Configuration - Production-safe
+// CORS Configuration - Production-safe with preflight handling
 const getCORSOptions = () => {
-  const allowedOrigins = [
-    "http://localhost:3000",           // Local development
-    "http://localhost:5173",           // Vite development
+  // Base allowed origins with all variations
+  const baseOrigins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
     "https://micro-saaas.onrender.com",
     "https://micro-saas-kohl.vercel.app"
   ];
 
-  // Production: Add Vercel frontend URL from environment variable
+  // Normalize and build final allowed origins list
+  const allowedOrigins = new Set();
+  
+  // Add base origins
+  baseOrigins.forEach(origin => {
+    // Remove trailing slash for comparison
+    const normalized = origin.replace(/\/$/, "");
+    allowedOrigins.add(normalized);
+  });
+
+  // Add from environment variable (comma-separated, with fallback)
   if (process.env.FRONTEND_URL) {
-    const urls = process.env.FRONTEND_URL.split(",").map(url => url.trim());
-    allowedOrigins.push(...urls);
+    const envUrls = process.env.FRONTEND_URL.split(",").map(url => 
+      url.trim().replace(/\/$/, "")
+    );
+    envUrls.forEach(url => allowedOrigins.add(url));
   }
 
-  // Additional production domains (if needed)
+  // Add additional origins from environment variable
   if (process.env.ALLOWED_ORIGINS) {
-    const origins = process.env.ALLOWED_ORIGINS.split(",").map(url => url.trim());
-    allowedOrigins.push(...origins);
+    const additionalOrigins = process.env.ALLOWED_ORIGINS.split(",").map(url =>
+      url.trim().replace(/\/$/, "")
+    );
+    additionalOrigins.forEach(url => allowedOrigins.add(url));
   }
+
+  const originsArray = Array.from(allowedOrigins);
 
   return {
     origin: (origin, callback) => {
@@ -50,25 +67,33 @@ const getCORSOptions = () => {
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      // Normalize the incoming origin (remove trailing slash)
+      const normalizedOrigin = origin.replace(/\/$/, "");
+
+      // Check if origin is in allowed list
+      if (originsArray.includes(normalizedOrigin)) {
         callback(null, true);
       } else {
-        // Log unauthorized origins in production for debugging
-        if (process.env.NODE_ENV === "production") {
-          console.warn(`Unauthorized CORS origin: ${origin}`);
-        }
+        // Log unauthorized origins for debugging
+        console.warn(`[CORS] Unauthorized origin attempt: ${origin} (normalized: ${normalizedOrigin})`);
+        console.warn(`[CORS] Allowed origins: ${originsArray.join(", ")}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,                  // Allow credentials (cookies, auth headers)
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 200          // For legacy browsers
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["X-Total-Count"],  // Expose custom headers to frontend
+    optionsSuccessStatus: 200,          // For legacy browsers
+    maxAge: 86400                       // 24 hours: cache preflight responses
   };
 };
 
-// Apply CORS middleware
+// Apply CORS middleware BEFORE all routes
 app.use(cors(getCORSOptions()));
+
+// Explicit OPTIONS handler for preflight requests
+app.options("*", cors(getCORSOptions()));
 
 // Middleware
 app.use(express.json({ limit: "10mb" }));
