@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import DashboardModal from "./DashboardModal";
+import PhoneInput from "../PhoneInput/PhoneInput";
+import { usePhoneInput } from "../../hooks";
 import * as ds from "../../services/dashboardService";
 import "../../css/dashboard.css";
 
@@ -8,11 +10,23 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
   const [loading, setLoading] = useState(true);
   const [superAdmins, setSuperAdmins] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ name: "", email: "", mobile: "", password: "" });
+  const [editForm, setEditForm] = useState({ name: "", email: "", password: "" });
   const [editFormErr, setEditFormErr] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
   const [deactivateTargetId, setDeactivateTargetId] = useState(null);
+
+  // Phone input hook for editing
+  const {
+    mobile: editMobile,
+    mobileDial: editMobileDial,
+    handleMobileChange: handleEditMobileChange,
+    getE164: getEditE164,
+    isValid: isEditPhoneValid,
+    setFromE164: setEditFromE164
+  } = usePhoneInput({
+    defaultDial: "+91"
+  });
 
   const loadSuperAdmins = useCallback(async () => {
     setLoading(true);
@@ -41,9 +55,11 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
     setEditForm({
       name: sa.name || "",
       email: sa.email || "",
-      mobile: sa.mobile || "",
       password: "",
     });
+    if (sa.mobile) {
+      setEditFromE164(sa.mobile);
+    }
     setEditFormErr("");
   };
 
@@ -54,17 +70,18 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
     if (!editForm.email?.trim()) { setEditFormErr("Email is required"); return; }
     if (!/\S+@\S+\.\S+/.test(editForm.email)) { setEditFormErr("Invalid email"); return; }
     if (editForm.password && editForm.password.length < 6) { setEditFormErr("Password must be at least 6 characters"); return; }
+    if (!isEditPhoneValid) { setEditFormErr("Invalid phone number"); return; }
 
     try {
       const payload = {
         name: editForm.name.trim(),
         email: editForm.email.trim(),
-        mobile: (editForm.mobile || "").replace(/[^0-9]/g, ""),
+        mobile: getEditE164(),
       };
       if (editForm.password?.trim()) payload.password = editForm.password;
       await ds.updateSuperAdmin(editingId, payload);
       setEditingId(null);
-      setEditForm({ name: "", email: "", mobile: "", password: "" });
+      setEditForm({ name: "", email: "", password: "" });
       loadSuperAdmins();
     } catch (ex) {
       setEditFormErr(ex?.response?.data?.message || "Failed to update");
@@ -185,11 +202,12 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
           <div className="sa-form-row">
             <div className="sa-form-field">
               <label className="sa-form-label">Mobile</label>
-              <input
-                className="sa-form-input"
-                value={editForm.mobile}
-                onChange={(e) => setEditForm({ ...editForm, mobile: e.target.value.replace(/[^0-9]/g, "") })}
-                inputMode="numeric"
+              <PhoneInput
+                value={editMobile}
+                dialCode={editMobileDial}
+                onChange={handleEditMobileChange}
+                placeholder="Enter mobile number"
+                id="edit-super-admin-mobile"
               />
             </div>
             <div className="sa-form-field">
@@ -206,7 +224,7 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
           {editFormErr && <p className="sa-form-error">{editFormErr}</p>}
           <div className="sa-form-actions">
             <button type="button" className="sa-btn sa-btn-outline" onClick={() => setEditingId(null)}>Cancel</button>
-            <button type="submit" className="sa-btn sa-btn-primary">Update</button>
+            <button type="submit" className="sa-btn sa-btn-primary" disabled={!isEditPhoneValid}>Update</button>
           </div>
         </form>
       </DashboardModal>

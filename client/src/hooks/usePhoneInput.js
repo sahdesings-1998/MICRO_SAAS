@@ -99,21 +99,46 @@ export const usePhoneInput = ({
   // Handle mobile number input
   // ───────────────────────────────────────────────────
   const handleMobileChange = useCallback(
-    (e) => {
-      const value = e.target.value;
-
-      // Format the input
-      const formatted = maskPhoneInput(mobile, value.slice(-1), mobileDial);
+    (eOrValue, newDial, fullNumber) => {
+      // Handle both event objects and direct values
+      let value;
+      let dial = mobileDial;
       
-      setMobile(formatted);
-
-      // Callback when format changes
-      if (onFormatChange) {
-        onFormatChange({
-          mobile: formatted,
-          mobileDial: mobileDial,
-          e164: mobileDial + formatted
-        });
+      if (eOrValue?.target?.value !== undefined) {
+        // Event object from input element
+        value = eOrValue.target.value;
+        // Format the input - extract only the new character
+        const formatted = maskPhoneInput(mobile, value.slice(-1), mobileDial);
+        setMobile(formatted);
+        
+        // Callback when format changes
+        if (onFormatChange) {
+          onFormatChange({
+            mobile: formatted,
+            mobileDial: mobileDial,
+            e164: mobileDial + formatted
+          });
+        }
+      } else if (typeof eOrValue === 'string') {
+        // Direct string value from PhoneInput component
+        // PhoneInput passes the entire digits value, so use it directly
+        value = eOrValue;
+        if (newDial !== undefined) {
+          dial = newDial;
+          setMobileDial(newDial);
+        }
+        
+        // Use the value directly (it's already digits only)
+        setMobile(value);
+        
+        // Callback when format changes
+        if (onFormatChange) {
+          onFormatChange({
+            mobile: value,
+            mobileDial: dial,
+            e164: dial + value
+          });
+        }
       }
     },
     [mobile, mobileDial, onFormatChange]
@@ -123,8 +148,20 @@ export const usePhoneInput = ({
   // Handle country code change
   // ───────────────────────────────────────────────────
   const handleDialChange = useCallback(
-    (e) => {
-      const newDial = e.target.value;
+    (eOrValue) => {
+      // Handle both event objects and direct values
+      let newDial;
+      
+      if (eOrValue?.target?.value !== undefined) {
+        // Event object from select element
+        newDial = eOrValue.target.value;
+      } else if (typeof eOrValue === 'string') {
+        // Direct string value (from PhoneInput component)
+        newDial = eOrValue;
+      } else {
+        return;
+      }
+      
       setMobileDial(newDial);
 
       // Callback when format changes
