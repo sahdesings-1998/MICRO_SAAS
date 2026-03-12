@@ -129,7 +129,7 @@ const AccountSection = () => {
   return (
     <div className="sa-account-section">
       <h2 className="sa-account-title">Account</h2>
-      <p className="sa-account-subtitle">Manage your admin account details</p>
+      <p className="sa-account-subtitle">Manage your organization account details</p>
 
       <div className="sa-account-profile-card">
         <div className="sa-account-profile-header">
@@ -139,7 +139,7 @@ const AccountSection = () => {
             </div>
             <div>
               <h3 className="sa-account-profile-name">{profile?.name ?? "—"}</h3>
-              <p className="sa-account-profile-code">{profile?.adminCode ?? "—"}</p>
+              {/* <p className="sa-account-profile-code">{profile?.adminCode ?? "—"}</p> */}
             </div>
           </div>
           {!editing && (
@@ -161,7 +161,7 @@ const AccountSection = () => {
                   required
                 />
               </div>
-              <div className="sa-account-form-field">
+              {/* <div className="sa-account-form-field">
                 <label className="sa-account-form-label">Admin Code (read-only)</label>
                 <input
                   className="sa-account-form-input"
@@ -170,7 +170,7 @@ const AccountSection = () => {
                   disabled
                   style={{ background: "#f8fafc", cursor: "default" }}
                 />
-              </div>
+              </div> */}
               <div className="sa-account-form-field">
                 <label className="sa-account-form-label">Email</label>
                 <input
@@ -191,14 +191,7 @@ const AccountSection = () => {
                   id="admin-account-mobile"
                 />
               </div>
-              <div className="sa-account-form-field sa-account-form-field-full">
-                <label className="sa-account-form-label">Company Name</label>
-                <input
-                  className="sa-account-form-input"
-                  value={form.companyName}
-                  onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-                />
-              </div>
+            
               <div className="sa-account-form-field">
                 <label className="sa-account-form-label">Created Date</label>
                 <input
@@ -209,6 +202,14 @@ const AccountSection = () => {
                   style={{ background: "#f8fafc", cursor: "default" }}
                 />
               </div>
+                {/* <div className="sa-account-form-field sa-account-form-field-full">
+                <label className="sa-account-form-label">Company Name</label>
+                <input
+                  className="sa-account-form-input"
+                  value={form.companyName}
+                  onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+                />
+              </div> */}
             </div>
             {formErr && <p className="sa-form-error">{formErr}</p>}
             <div className="sa-account-form-actions">
@@ -226,10 +227,10 @@ const AccountSection = () => {
               <span className="sa-account-detail-label">Name</span>
               <span className="sa-account-detail-value">{profile?.name ?? "—"}</span>
             </div>
-            <div className="sa-account-detail-item">
+            {/* <div className="sa-account-detail-item">
               <span className="sa-account-detail-label">Admin Code</span>
               <span className="sa-account-detail-value">{profile?.adminCode ?? "—"}</span>
-            </div>
+            </div> */}
             <div className="sa-account-detail-item">
               <span className="sa-account-detail-label">Email</span>
               <span className="sa-account-detail-value">{profile?.email ?? "—"}</span>
@@ -238,10 +239,10 @@ const AccountSection = () => {
               <span className="sa-account-detail-label">Mobile</span>
               <span className="sa-account-detail-value">{profile?.mobile ?? "—"}</span>
             </div>
-            <div className="sa-account-detail-item">
+            {/* <div className="sa-account-detail-item">
               <span className="sa-account-detail-label">Company Name</span>
               <span className="sa-account-detail-value">{profile?.companyName ?? "—"}</span>
-            </div>
+            </div> */}
             <div className="sa-account-detail-item">
               <span className="sa-account-detail-label">Created Date</span>
               <span className="sa-account-detail-value">{formatDate(profile?.createdAt)}</span>

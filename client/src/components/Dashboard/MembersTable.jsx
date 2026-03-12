@@ -1,4 +1,4 @@
-import { FiEye } from "react-icons/fi";
+import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
 import "../../css/dashboard.css";
 
 const MembersTable = ({
@@ -28,9 +28,9 @@ const MembersTable = ({
           <thead>
             <tr>
               <th>Name</th>
-              <th>Member Code</th>
+              {/* <th>Member Code</th> */}
               <th>Phone</th>
-              <th>Company</th>
+              {/* <th>Company</th> */}
               <th>Member Status</th>
               <th>Join Date</th>
               <th>Actions</th>
@@ -61,9 +61,9 @@ const MembersTable = ({
                 return (
                   <tr key={rowId}>
                     <td>{row.name}</td>
-                    <td>{row.memberCode || "—"}</td>
+                    {/* <td>{row.memberCode || "—"}</td> */}
                     <td>{row.mobile || row.phone || "—"}</td>
-                    <td>{row.companyName || "—"}</td>
+                    {/* <td>{row.companyName || "—"}</td> */}
                     <td>
                       <span
                         className={`sa-badge ${
@@ -90,22 +90,30 @@ const MembersTable = ({
                             <FiEye />
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-outline sa-btn-sm"
-                          onClick={() => onEdit(actionId)}
-                          disabled={!actionId}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-danger sa-btn-sm"
-                          onClick={() => onSoftDelete(actionId)}
-                          disabled={!actionId}
-                        >
-                          Delete
-                        </button>
+                        {onEdit && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-outline sa-btn-sm"
+                            onClick={() => onEdit(actionId)}
+                            disabled={!actionId}
+                            title="Edit"
+                            aria-label="Edit member"
+                          >
+                            <FiEdit2 />
+                          </button>
+                        )}
+                        {onSoftDelete && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-danger sa-btn-sm"
+                            onClick={() => onSoftDelete(actionId)}
+                            disabled={!actionId}
+                            title="Delete"
+                            aria-label="Delete member"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

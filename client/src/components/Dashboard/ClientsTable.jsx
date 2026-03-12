@@ -1,8 +1,8 @@
-import { FiEye } from "react-icons/fi";
+import { FiEye, FiToggleRight, FiTrash2 } from "react-icons/fi";
 import "../../css/dashboard.css";
 
 const ClientsTable = ({
-  title = "Clients",
+  title = "Organization",
   addLabel = "Add",
   rows = [],
   showAddButton = false,
@@ -90,22 +90,30 @@ const ClientsTable = ({
                             <FiEye />
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-outline sa-btn-sm"
-                          onClick={() => onToggleStatus(actionId, row)}
-                          disabled={!actionId}
-                        >
-                          {row.isActive ? "Deactivate" : "Activate"}
-                        </button>
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-danger sa-btn-sm"
-                          onClick={() => onSoftDelete(actionId)}
-                          disabled={!actionId}
-                        >
-                          Delete
-                        </button>
+                        {onToggleStatus && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-outline sa-btn-sm"
+                            onClick={() => onToggleStatus(actionId, row)}
+                            disabled={!actionId}
+                            title={row.isActive ? "Deactivate" : "Activate"}
+                            aria-label={row.isActive ? "Deactivate client" : "Activate client"}
+                          >
+                            <FiToggleRight />
+                          </button>
+                        )}
+                        {onSoftDelete && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-danger sa-btn-sm"
+                            onClick={() => onSoftDelete(actionId)}
+                            disabled={!actionId}
+                            title="Delete"
+                            aria-label="Delete client"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

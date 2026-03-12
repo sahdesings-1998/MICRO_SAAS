@@ -489,6 +489,7 @@
 .sa-panel-title {
   font-size: 15px;
   font-weight: 700;
+  margin-bottom: 15px;
   color: var(--sa-text);
   margin: 0;
   letter-spacing: -0.01em;
@@ -805,14 +806,14 @@ select.sa-form-input {
 /* 2-column form layout for popup forms */
 .sa-form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 18px;
   align-items: start;
 }
 
-.sa-form-row .sa-form-field {
+/* .sa-form-row .sa-form-field {
   min-width: 0;
-}
+} */
 
 .sa-form-field-full {
   grid-column: 1 / -1;
@@ -972,9 +973,15 @@ select.sa-form-input {
 
 .sa-member-details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 28px;
+}
+
+@media (max-width: 640px) {
+  .sa-member-details-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-member-detail-card {
@@ -1184,8 +1191,14 @@ select.sa-form-input {
 
 .sa-member-dashboard-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .sa-member-dashboard-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-memdash-subscription-card,
@@ -1356,9 +1369,15 @@ select.sa-form-input {
 
 .sa-memdash-account-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .sa-memdash-account-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-memdash-account-field {
@@ -1404,8 +1423,14 @@ select.sa-form-input {
 
 .sa-memdash-account-detail-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .sa-memdash-account-detail-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-memdash-account-detail-item {
@@ -1508,9 +1533,15 @@ select.sa-form-input {
 
 .sa-account-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .sa-account-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-account-form-field {
@@ -1552,8 +1583,14 @@ select.sa-form-input {
 
 .sa-account-details-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .sa-account-details-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sa-account-detail-item {
@@ -1747,7 +1784,8 @@ select.sa-form-input {
 .sa-reports-filter-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--sa-text-muted);
+  /* color: var(--sa-text-muted); */
+  color: var(--sa-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

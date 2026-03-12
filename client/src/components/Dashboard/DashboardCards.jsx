@@ -12,9 +12,9 @@ const CARD_CONFIG = {
   "Paid Members": { icon: FiCheck, description: "Members with completed payments" },
   "Unpaid Members": { icon: FiClock, description: "Members with pending payments" },
   "Total Revenue": { icon: FiDollarSign, description: "Total paid invoice revenue" },
-  "Total Clients": { icon: FiUsers, description: "All admin/client accounts" },
-  "Active Clients": { icon: FiUserCheck, description: "Clients with active status" },
-  "Inactive Clients": { icon: FiUserX, description: "Clients with inactive status" },
+  // "Total Clients": { icon: FiUsers, description: "All admin/client accounts" },
+  "Active Organization": { icon: FiUserCheck, description: "Organizations with active status" },
+  "Inactive Organization": { icon: FiUserX, description: "Organizations with inactive status" },
   "Revenue": { icon: FiDollarSign, description: "Total paid invoice revenue" },
 };
 

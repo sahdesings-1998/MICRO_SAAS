@@ -404,7 +404,7 @@ const MemberDashboard = () => {
                 id="edit-member-mobile"
               />
             </div>
-            <div className="sa-form-field">
+            {/* <div className="sa-form-field">
               <label className="sa-form-label">Company Name</label>
               <input
                 className="sa-form-input"
@@ -413,7 +413,7 @@ const MemberDashboard = () => {
                 onChange={(e) => setEditFormData({ ...editFormData, companyName: e.target.value })}
                 placeholder="Enter company name"
               />
-            </div>
+            </div> */}
           </div>
 
           {editFormErr && (
@@ -603,14 +603,14 @@ const MemberAccountSection = ({ member, onSaved }) => {
                   id="member-account-mobile"
                 />
               </div>
-              <div className="sa-memdash-account-field sa-memdash-account-field-full">
+              {/* <div className="sa-memdash-account-field sa-memdash-account-field-full">
                 <label className="sa-memdash-account-label">Company Name</label>
                 <input
                   className="sa-memdash-account-input"
                   value={form.companyName}
                   onChange={(e) => setForm({ ...form, companyName: e.target.value })}
                 />
-              </div>
+              </div> */}
             </div>
             {formErr && <p className="sa-form-error">{formErr}</p>}
             <div className="sa-memdash-account-actions">
@@ -635,10 +635,10 @@ const MemberAccountSection = ({ member, onSaved }) => {
               </div>
             </div>
             <div className="sa-memdash-account-detail-row">
-              <div className="sa-memdash-account-detail-item">
+              {/* <div className="sa-memdash-account-detail-item">
                 <span className="sa-memdash-detail-label">Company Name</span>
                 <span className="sa-memdash-detail-value">{profile?.companyName ?? "—"}</span>
-              </div>
+              </div> */}
               <div className="sa-memdash-account-detail-item">
                 <span className="sa-memdash-detail-label">Joined Date</span>
                 <span className="sa-memdash-detail-value">{formatDate(profile?.createdAt)}</span>

@@ -1,3 +1,4 @@
+import { FiCheck, FiTrash2 } from "react-icons/fi";
 import "../../css/dashboard.css";
 
 const InvoicesTable = ({
@@ -87,18 +88,24 @@ const InvoicesTable = ({
                             className="sa-btn sa-btn-outline sa-btn-sm"
                             onClick={() => onToggleStatus(actionId)}
                             disabled={!actionId}
+                            title="Mark as Paid"
+                            aria-label="Mark invoice as paid"
                           >
-                            Mark as Paid
+                            <FiCheck />
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-danger sa-btn-sm"
-                          onClick={() => onSoftDelete(actionId)}
-                          disabled={!actionId}
-                        >
-                          Delete
-                        </button>
+                        {onSoftDelete && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-danger sa-btn-sm"
+                            onClick={() => onSoftDelete(actionId)}
+                            disabled={!actionId}
+                            title="Delete"
+                            aria-label="Delete invoice"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

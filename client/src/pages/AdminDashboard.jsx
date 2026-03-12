@@ -540,7 +540,7 @@ const AdminDashboard = () => {
           <>
             <DashboardCards cards={cards} />
             <div className="sa-panel sa-revenue-chart-panel">
-              <h3 className="sa-panel-title">Admin Revenue Over Time</h3>
+              <h3 className="sa-panel-title">Organization Revenue Over Time</h3>
               <p className="sa-revenue-chart-subtitle">Revenue from Paid invoices only</p>
               <RevenueChart data={revenueByMonth} />
             </div>
@@ -806,10 +806,10 @@ const AdminDashboard = () => {
           </div>
 
           <div className="sa-form-row">
-            <div className="sa-form-field">
+            {/* <div className="sa-form-field">
               <label className="sa-form-label">Company Name</label>
               <input className="sa-form-input" value={memberForm.companyName} onChange={(e) => setMemberForm({ ...memberForm, companyName: e.target.value })} placeholder="Optional" />
-            </div>
+            </div> */}
             {!isMemberEdit && (
               <div className="sa-form-field">
                 <label className="sa-form-label">Subscription Plan</label>

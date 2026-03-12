@@ -48,7 +48,7 @@ const ClientsChart = ({ data = [] }) => {
       labels,
       datasets: [
         {
-          label: "Clients",
+          label: "Organization",
           data: values,
           fill: true,
           tension: 0.4,

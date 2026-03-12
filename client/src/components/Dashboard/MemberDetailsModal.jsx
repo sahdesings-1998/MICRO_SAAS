@@ -54,10 +54,10 @@ const MemberDetailsModal = ({
               <span className="sa-member-detail-label">Email Address</span>
               <span className="sa-member-detail-value">{m.email ?? "—"}</span>
             </div>
-            <div className="sa-member-detail-card">
+            {/* <div className="sa-member-detail-card">
               <span className="sa-member-detail-label">Company Name</span>
               <span className="sa-member-detail-value">{m.companyName ?? "—"}</span>
-            </div>
+            </div> */}
             <div className="sa-member-detail-card">
               <span className="sa-member-detail-label">Join Date</span>
               <span className="sa-member-detail-value">{formatDate(m.createdAt)}</span>

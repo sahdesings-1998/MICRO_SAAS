@@ -4,15 +4,15 @@ import * as ds from "../../services/dashboardService";
 import "../../css/dashboard.css";
 
 const CARD_ICONS = {
-  "Total Clients": FiUsers,
-  "Active Clients": FiUserCheck,
-  "Inactive Clients": FiUserX,
+  "Total Organizations": FiUsers,
+  "Active Organizations": FiUserCheck,
+  "Inactive Organizations": FiUserX,
 };
 
 const CARD_DESCRIPTIONS = {
-  "Total Clients": "All admin/client accounts",
-  "Active Clients": "Clients with active status",
-  "Inactive Clients": "Clients with inactive status",
+  "Total Organizations": "All organization accounts",
+  "Active Organizations": "Organizations with active status",
+  "Inactive Organizations": "Organizations with inactive status",
 };
 
 const ReportCard = ({ label, value, icon: Icon, description }) => (
@@ -62,9 +62,9 @@ const SuperAdminReportsSection = () => {
   const rows = reportData.rows || [];
 
   const reportCards = [
-    { label: "Total Clients", value: summary.totalClients ?? 0, icon: CARD_ICONS["Total Clients"], description: CARD_DESCRIPTIONS["Total Clients"] },
-    { label: "Active Clients", value: summary.activeClients ?? 0, icon: CARD_ICONS["Active Clients"], description: CARD_DESCRIPTIONS["Active Clients"] },
-    { label: "Inactive Clients", value: summary.inactiveClients ?? 0, icon: CARD_ICONS["Inactive Clients"], description: CARD_DESCRIPTIONS["Inactive Clients"] },
+    { label: "Total Organizations", value: summary.totalClients ?? 0, icon: CARD_ICONS["Total Organizations"], description: CARD_DESCRIPTIONS["Total Organizations"] },
+    { label: "Active Organizations", value: summary.activeClients ?? 0, icon: CARD_ICONS["Active Organizations"], description: CARD_DESCRIPTIONS["Active Organizations"] },
+    { label: "Inactive Organizations", value: summary.inactiveClients ?? 0, icon: CARD_ICONS["Inactive Organizations"], description: CARD_DESCRIPTIONS["Inactive Organizations"] },
   ];
 
   if (loading) {
@@ -79,9 +79,9 @@ const SuperAdminReportsSection = () => {
 
   return (
     <div className="sa-reports-dashboard">
-      <h2 className="sa-reports-dashboard-title">Clients Report</h2>
+      <h2 className="sa-reports-dashboard-title">Organization Report</h2>
       <p className="sa-reports-dashboard-subtitle">
-        Overview of clients across all accounts.
+        Overview of Organizations across all accounts.
       </p>
 
       <div className="sa-reports-cards-grid">
@@ -92,14 +92,14 @@ const SuperAdminReportsSection = () => {
 
       <div className="sa-panel" style={{ marginTop: 24 }}>
         <div className="sa-panel-header">
-          <h3 className="sa-panel-title">Clients Overview</h3>
+          <h3 className="sa-panel-title">Organization Overview</h3>
         </div>
         <div className="sa-table-wrapper">
           <table className="sa-table">
             <thead>
               <tr>
                 <th>Client Name</th>
-                <th>Admin Code</th>
+                {/* <th>Admin Code</th> */}
                 <th>Status</th>
                 <th>Created Date</th>
               </tr>
@@ -115,7 +115,7 @@ const SuperAdminReportsSection = () => {
                 rows.map((row, idx) => (
                   <tr key={row.adminId || idx}>
                     <td>{row.clientName ?? "—"}</td>
-                    <td>{row.adminCode ?? "—"}</td>
+                    {/* <td>{row.adminCode ?? "—"}</td> */}
                     <td>
                       <span className={`sa-badge ${row.status === "Active" ? "sa-badge-active" : "sa-badge-inactive"}`}>
                         {row.status ?? "—"}

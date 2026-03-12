@@ -409,7 +409,7 @@ const ReportsSection = ({
               <tr>
                 <th>Member Code</th>
                 <th>Member Name</th>
-                <th>Company Name</th>
+                {/* <th>Company Name</th> */}
                 <th>Member Status</th>
                 <th>Join Date</th>
               </tr>
@@ -426,7 +426,7 @@ const ReportsSection = ({
                   <tr key={(row.memberCode || "") + idx}>
                     <td>{row.memberCode}</td>
                     <td>{row.memberName}</td>
-                    <td>{row.companyName}</td>
+                    {/* <td>{row.companyName}</td> */}
                     <td>
                       <span
                         className={`sa-badge ${

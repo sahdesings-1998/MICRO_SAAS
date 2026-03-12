@@ -1,3 +1,4 @@
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import "../../css/dashboard.css";
 
 const SubscriptionsTable = ({
@@ -62,22 +63,30 @@ const SubscriptionsTable = ({
                     <td>{row.description || "—"}</td>
                     <td>
                       <div className="sa-table-actions">
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-outline sa-btn-sm"
-                          onClick={() => onEdit(actionId)}
-                          disabled={!actionId}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="sa-btn sa-btn-danger sa-btn-sm"
-                          onClick={() => onSoftDelete(actionId)}
-                          disabled={!actionId}
-                        >
-                          Delete
-                        </button>
+                        {onEdit && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-outline sa-btn-sm"
+                            onClick={() => onEdit(actionId)}
+                            disabled={!actionId}
+                            title="Edit"
+                            aria-label="Edit subscription plan"
+                          >
+                            <FiEdit2 />
+                          </button>
+                        )}
+                        {onSoftDelete && (
+                          <button
+                            type="button"
+                            className="sa-btn sa-btn-danger sa-btn-sm"
+                            onClick={() => onSoftDelete(actionId)}
+                            disabled={!actionId}
+                            title="Delete"
+                            aria-label="Delete subscription plan"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

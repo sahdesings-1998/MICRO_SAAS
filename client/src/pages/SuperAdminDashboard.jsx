@@ -201,9 +201,9 @@ const SuperAdminDashboard = () => {
 
   const cards = stats
     ? [
-        { label: "Total Clients", value: stats.totalClients ?? 0 },
-        { label: "Active Clients", value: stats.activeClients ?? 0 },
-        { label: "Inactive Clients", value: stats.inactiveClients ?? 0 },
+        { label: "Total Organizations", value: stats.totalClients ?? 0 },
+        { label: "Active Organizations", value: stats.activeClients ?? 0 },
+        { label: "Inactive Organizations", value: stats.inactiveClients ?? 0 },
       ]
     : [];
 
@@ -214,8 +214,8 @@ const SuperAdminDashboard = () => {
           <>
             <DashboardCards cards={cards} />
             <div className="sa-panel sa-revenue-chart-panel">
-              <h3 className="sa-panel-title">Clients Added Over Time</h3>
-              <p className="sa-revenue-chart-subtitle">New clients per month</p>
+              <h3 className="sa-panel-title">Organization Added Over Time</h3>
+              <p className="sa-revenue-chart-subtitle">New organizations per month</p>
               <ClientsChart data={clientsByMonth} />
             </div>
           </>
@@ -224,8 +224,8 @@ const SuperAdminDashboard = () => {
       case "Clients":
         return (
           <ClientsTable
-            title="Admin Accounts"
-            addLabel="+ Add Admin"
+            title="Organization Accounts"
+            addLabel="+ Add Organization"
             rows={admins}
             showAddButton
             onAdd={() => { setShowAddAdmin(true); setAdminFormErr(""); }}
@@ -269,11 +269,11 @@ const SuperAdminDashboard = () => {
         onClose={() => setViewClientId(null)}
       />
 
-      <DashboardModal open={showAddAdmin} title="Add New Admin" onClose={() => setShowAddAdmin(false)} size="form">
+      <DashboardModal open={showAddAdmin} title="Add New Organization" onClose={() => setShowAddAdmin(false)} size="form">
         <form className="sa-form" onSubmit={handleCreateAdmin}>
           <div className="sa-form-row">
             <div className="sa-form-field">
-              <label className="sa-form-label">Name</label>
+              <label className="sa-form-label">Organization Name</label>
               <input className="sa-form-input" value={adminForm.name} onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })} required />
             </div>
             <div className="sa-form-field">
@@ -359,7 +359,7 @@ const SuperAdminDashboard = () => {
         </div>
       </DashboardModal>
 
-      <DashboardModal open={deleteTarget !== null} title="Delete Admin" onClose={() => { setDeleteTarget(null); setDeleteReason(""); }}>
+      <DashboardModal open={deleteTarget !== null} title="Delete Organization" onClose={() => { setDeleteTarget(null); setDeleteReason(""); }}>
         <div className="sa-form">
           <p style={{ color: "#64748b", fontSize: 14 }}>This will deactivate the admin account. Please provide a reason.</p>
           <div className="sa-form-field">
