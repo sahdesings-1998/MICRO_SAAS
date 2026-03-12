@@ -933,6 +933,32 @@ select.sa-form-input {
   max-width: 1120px;
 }
 
+/* ===== CONFIRMATION MODAL ===== */
+
+.sa-confirmation-modal {
+  padding: 24px 0;
+}
+
+.sa-confirmation-message {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--sa-text);
+  margin-bottom: 24px;
+  /* text-align: center; */
+}
+
+.sa-confirmation-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sa-confirmation-actions .sa-btn {
+  min-width: 120px;
+}
+
 .sa-member-profile-header {
   display: flex;
   align-items: flex-start;
@@ -1579,6 +1605,7 @@ select.sa-form-input {
   display: flex;
   gap: 12px;
   margin-top: 20px;
+  justify-content: flex-end;
 }
 
 .sa-account-details-grid {

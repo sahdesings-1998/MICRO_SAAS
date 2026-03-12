@@ -303,7 +303,7 @@ const SuperAdminDashboard = () => {
           {adminFormErr && <p className="sa-form-error">{adminFormErr}</p>}
           <div className="sa-form-actions">
             <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowAddAdmin(false)}>Cancel</button>
-            <button type="submit" className="sa-btn sa-btn-primary">Create Admin</button>
+            <button type="submit" className="sa-btn sa-btn-primary">Create Organization</button>
           </div>
         </form>
       </DashboardModal>

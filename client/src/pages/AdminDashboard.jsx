@@ -100,6 +100,7 @@ const AdminDashboard = () => {
   const [deleteType, setDeleteType] = useState("");
   const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const [pendingStatusValue, setPendingStatusValue] = useState(null);
+  const [showUpdateMemberConfirm, setShowUpdateMemberConfirm] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
   const [viewMember, setViewMember] = useState(null);
   const [showMemberDetailsModal, setShowMemberDetailsModal] = useState(false);
@@ -257,13 +258,7 @@ const AdminDashboard = () => {
 
   const handleStatusDropdownChange = (e) => {
     const newActive = e.target.value === "Active";
-    const originalMember = members.find((x) => String(x._id || x.userId || "") === String(editingMemberId));
-    if (originalMember && originalMember.isActive !== newActive) {
-      setPendingStatusValue(newActive);
-      setShowStatusConfirm(true);
-    } else {
-      setMemberForm((prev) => ({ ...prev, isActive: newActive }));
-    }
+    setMemberForm((prev) => ({ ...prev, isActive: newActive }));
   };
 
   const handleStatusConfirm = async () => {
@@ -290,6 +285,11 @@ const AdminDashboard = () => {
     const err = validateMemberForm(memberForm, true);
     if (err) { setMemberFormErr(err); return; }
     if (!editingMemberId) return;
+    setShowUpdateMemberConfirm(true);
+  };
+
+  const handleConfirmUpdateMember = async () => {
+    if (!editingMemberId) return;
     const originalMember = members.find((x) => String(x._id || x.userId || "") === String(editingMemberId));
     if (!originalMember) return;
 
@@ -306,21 +306,28 @@ const AdminDashboard = () => {
     if (fullMobile !== (originalMember.mobile || "")) payload.mobile = fullMobile;
     if (trimmedCompany !== (originalMember.companyName || "")) payload.companyName = trimmedCompany;
     if (memberForm.password?.trim()) payload.password = memberForm.password;
+    if (memberForm.isActive !== originalMember.isActive) payload.isActive = memberForm.isActive;
 
     if (Object.keys(payload).length === 0) {
       setMemberFormErr("No changes to save");
+      setShowUpdateMemberConfirm(false);
       return;
     }
 
     try {
       await ds.updateMember(editingMemberId, payload);
       setShowMemberModal(false);
+      setShowUpdateMemberConfirm(false);
       resetMemberForm();
       loadMembers();
       loadStats();
     } catch (ex) {
       setMemberFormErr(ex?.response?.data?.message || "Failed to update member");
     }
+  };
+
+  const handleCancelUpdateMember = () => {
+    setShowUpdateMemberConfirm(false);
   };
 
   const openDeleteMember = (id) => {
@@ -857,7 +864,11 @@ const AdminDashboard = () => {
 
           <div className="sa-form-actions">
             <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowMemberModal(false)}>Cancel</button>
-            <button type="submit" className="sa-btn sa-btn-primary">{isMemberEdit ? "Update Member" : "Create Member"}</button>
+            {isMemberEdit ? (
+              <button type="button" className="sa-btn sa-btn-primary" onClick={handleUpdateMember}>Update Member</button>
+            ) : (
+              <button type="submit" className="sa-btn sa-btn-primary">Create Member</button>
+            )}
           </div>
         </form>
       </DashboardModal>
@@ -878,6 +889,35 @@ const AdminDashboard = () => {
           <button type="button" className="sa-btn sa-btn-primary" onClick={handleStatusConfirm}>
             Confirm
           </button>
+        </div>
+      </DashboardModal>
+
+      {/* Update Member Confirmation */}
+      <DashboardModal
+        open={showUpdateMemberConfirm}
+        title="Confirm Update"
+        onClose={handleCancelUpdateMember}
+      >
+        <div className="sa-confirmation-modal">
+          <p className="sa-confirmation-message">
+            Are you sure you want to update this member?
+          </p>
+          <div className="sa-confirmation-actions">
+            <button
+              type="button"
+              className="sa-btn sa-btn-secondary"
+              onClick={handleCancelUpdateMember}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="sa-btn sa-btn-primary"
+              onClick={handleConfirmUpdateMember}
+            >
+              Yes, Update
+            </button>
+          </div>
         </div>
       </DashboardModal>
 

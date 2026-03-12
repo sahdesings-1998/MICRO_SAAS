@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FiX, FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
+import DashboardModal from "./DashboardModal";
 import "../../css/dashboard.css";
 
 const formatDate = (val) => {
@@ -17,10 +19,27 @@ const MemberDetailsModal = ({
   onDeleteInvoice,
   onToggleInvoiceStatus,
 }) => {
+  const [confirmMarkPaidId, setConfirmMarkPaidId] = useState(null);
+
   if (!open) return null;
 
   const m = member || {};
   const invoices = Array.isArray(memberInvoices) ? memberInvoices : [];
+
+  const handleMarkPaidClick = (id) => {
+    setConfirmMarkPaidId(id);
+  };
+
+  const handleConfirmMarkPaid = () => {
+    if (confirmMarkPaidId && onToggleInvoiceStatus) {
+      onToggleInvoiceStatus(confirmMarkPaidId);
+    }
+    setConfirmMarkPaidId(null);
+  };
+
+  const handleCancelMarkPaid = () => {
+    setConfirmMarkPaidId(null);
+  };
 
   return (
     <div className="sa-modal-overlay sa-modal-no-close" aria-hidden="true">
@@ -119,7 +138,7 @@ const MemberDetailsModal = ({
                               <button
                                 type="button"
                                 className="sa-btn sa-btn-outline sa-btn-sm"
-                                onClick={() => onToggleInvoiceStatus(inv._id)}
+                                onClick={() => handleMarkPaidClick(inv._id)}
                                 title="Mark as Paid"
                                 aria-label="Mark invoice as paid"
                               >
@@ -164,6 +183,34 @@ const MemberDetailsModal = ({
             </button>
           </div> */}
         </div>
+
+        <DashboardModal
+          open={confirmMarkPaidId !== null}
+          title="Confirm Payment"
+          onClose={handleCancelMarkPaid}
+        >
+          <div className="sa-confirmation-modal">
+            <p className="sa-confirmation-message">
+              Are you sure you want to mark this invoice as paid?
+            </p>
+            <div className="sa-confirmation-actions">
+              <button
+                type="button"
+                className="sa-btn sa-btn-secondary"
+                onClick={handleCancelMarkPaid}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="sa-btn sa-btn-primary"
+                onClick={handleConfirmMarkPaid}
+              >
+                Yes, Mark as Paid
+              </button>
+            </div>
+          </div>
+        </DashboardModal>
       </div>
     </div>
   );
