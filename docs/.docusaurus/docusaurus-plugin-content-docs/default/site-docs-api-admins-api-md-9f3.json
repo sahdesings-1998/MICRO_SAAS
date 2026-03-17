@@ -1,0 +1,18 @@
+{
+  "id": "api/admins-api",
+  "title": "Admins API",
+  "description": "API endpoints for managing admin accounts and permissions (Admin/SuperAdmin only).",
+  "source": "@site/docs/api/admins-api.md",
+  "sourceDirName": "api",
+  "slug": "/api/admins-api",
+  "permalink": "/docs/api/admins-api",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/api/admins-api.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  }
+}

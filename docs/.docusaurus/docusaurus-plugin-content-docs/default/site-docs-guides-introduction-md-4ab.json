@@ -1,0 +1,18 @@
+{
+  "id": "guides/introduction",
+  "title": "Guides Introduction",
+  "description": "Welcome to the Micro-SaaS Guides section. Here you'll find detailed, step-by-step instructions for common tasks and configurations.",
+  "source": "@site/docs/guides/introduction.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/introduction",
+  "permalink": "/docs/guides/introduction",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/guides/introduction.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}

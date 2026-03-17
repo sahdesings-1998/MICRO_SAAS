@@ -1,0 +1,27 @@
+{
+  "id": "guides/database",
+  "title": "Database Guide",
+  "description": "Complete guide to working with the Micro-SaaS database layer.",
+  "source": "@site/docs/guides/database.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/database",
+  "permalink": "/docs/guides/database",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/guides/database.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Authentication Guide 🔒",
+    "permalink": "/docs/guides/authentication"
+  },
+  "next": {
+    "title": "API Reference Overview",
+    "permalink": "/docs/api/overview"
+  }
+}

@@ -1,0 +1,7 @@
+info:
+  name: SuperAdmin
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit

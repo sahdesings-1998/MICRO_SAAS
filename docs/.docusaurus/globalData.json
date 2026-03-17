@@ -1,0 +1,102 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs/",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs/",
+          "mainDocId": "index",
+          "docs": [
+            {
+              "id": "api/admins-api",
+              "path": "/docs/api/admins-api"
+            },
+            {
+              "id": "api/authentication-api",
+              "path": "/docs/api/authentication-api",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/members-api",
+              "path": "/docs/api/members-api",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/overview",
+              "path": "/docs/api/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "documentation-guide",
+              "path": "/docs/documentation-guide"
+            },
+            {
+              "id": "faq/common-issues",
+              "path": "/docs/faq/common-issues",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "faq/troubleshooting",
+              "path": "/docs/faq/troubleshooting",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "getting-started",
+              "path": "/docs/getting-started",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "guides/authentication",
+              "path": "/docs/guides/authentication",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "guides/database",
+              "path": "/docs/guides/database",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "guides/deployment",
+              "path": "/docs/guides/deployment"
+            },
+            {
+              "id": "guides/introduction",
+              "path": "/docs/guides/introduction"
+            },
+            {
+              "id": "index",
+              "path": "/docs/"
+            },
+            {
+              "id": "introduction/architecture",
+              "path": "/docs/introduction/architecture",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "introduction/installation",
+              "path": "/docs/introduction/installation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "introduction/overview",
+              "path": "/docs/introduction/overview"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/docs/getting-started",
+                "label": "Getting Started"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

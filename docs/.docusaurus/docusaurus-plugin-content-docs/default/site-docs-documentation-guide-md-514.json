@@ -1,0 +1,18 @@
+{
+  "id": "documentation-guide",
+  "title": "Getting Started with Documentation",
+  "description": "Quick guide to access and use the Micro-SaaS documentation site.",
+  "source": "@site/docs/documentation-guide.md",
+  "sourceDirName": ".",
+  "slug": "/documentation-guide",
+  "permalink": "/docs/documentation-guide",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/documentation-guide.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}

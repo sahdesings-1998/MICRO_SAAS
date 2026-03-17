@@ -1,0 +1,17 @@
+info:
+  name: Get All SuperAdmins
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: https://micro-saaas.onrender.com/api/superadmin/super-admins
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWIyNTZjZWU0MDFiOTgzODUzNTUxNzQiLCJyb2xlIjoic3VwZXJhZG1pbiIsImlhdCI6MTc3MzQ2NzAyNCwiZXhwIjoxNzczNTUzNDI0fQ.VZVq7k4Pa49tXByMrE4PVHsjYBuXPJMbs0SzrNQY0JU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

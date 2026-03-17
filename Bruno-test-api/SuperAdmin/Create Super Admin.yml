@@ -1,0 +1,26 @@
+info:
+  name: Create Super Admin
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://micro-saaas.onrender.com/api/superadmin/super-admins
+  body:
+    type: json
+    data: |-
+      {
+          "name": "Test SA 2",
+                  "email": "apitest-sa2-${Date.now()}@test.com",
+                  "password": "TestSA2@123",
+                  "mobile": "1111222233"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWIyNTZjZWU0MDFiOTgzODUzNTUxNzQiLCJyb2xlIjoic3VwZXJhZG1pbiIsImlhdCI6MTc3MzQ2NzAyNCwiZXhwIjoxNzczNTUzNDI0fQ.VZVq7k4Pa49tXByMrE4PVHsjYBuXPJMbs0SzrNQY0JU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

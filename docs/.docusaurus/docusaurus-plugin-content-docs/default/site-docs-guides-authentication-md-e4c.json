@@ -1,0 +1,27 @@
+{
+  "id": "guides/authentication",
+  "title": "Authentication Guide 🔒",
+  "description": "Learn how Micro-SaaS handles user login and security.",
+  "source": "@site/docs/guides/authentication.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/authentication",
+  "permalink": "/docs/guides/authentication",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/guides/authentication.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Architecture",
+    "permalink": "/docs/introduction/architecture"
+  },
+  "next": {
+    "title": "Database Guide",
+    "permalink": "/docs/guides/database"
+  }
+}

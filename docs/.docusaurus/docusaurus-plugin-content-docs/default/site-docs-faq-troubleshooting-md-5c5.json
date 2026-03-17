@@ -1,0 +1,27 @@
+{
+  "id": "faq/troubleshooting",
+  "title": "Troubleshooting Guide",
+  "description": "Common issues and their solutions.",
+  "source": "@site/docs/faq/troubleshooting.md",
+  "sourceDirName": "faq",
+  "slug": "/faq/troubleshooting",
+  "permalink": "/docs/faq/troubleshooting",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/faq/troubleshooting.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Members API",
+    "permalink": "/docs/api/members-api"
+  },
+  "next": {
+    "title": "Common Issues",
+    "permalink": "/docs/faq/common-issues"
+  }
+}

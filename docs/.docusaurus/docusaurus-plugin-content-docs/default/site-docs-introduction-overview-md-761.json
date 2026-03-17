@@ -1,0 +1,18 @@
+{
+  "id": "introduction/overview",
+  "title": "Project Overview",
+  "description": "What We Build",
+  "source": "@site/docs/introduction/overview.md",
+  "sourceDirName": "introduction",
+  "slug": "/introduction/overview",
+  "permalink": "/docs/introduction/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/introduction/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  }
+}

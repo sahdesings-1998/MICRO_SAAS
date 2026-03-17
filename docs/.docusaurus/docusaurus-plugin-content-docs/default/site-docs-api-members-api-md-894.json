@@ -1,0 +1,27 @@
+{
+  "id": "api/members-api",
+  "title": "Members API",
+  "description": "API endpoints for managing member accounts and information.",
+  "source": "@site/docs/api/members-api.md",
+  "sourceDirName": "api",
+  "slug": "/api/members-api",
+  "permalink": "/docs/api/members-api",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/api/members-api.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Authentication API",
+    "permalink": "/docs/api/authentication-api"
+  },
+  "next": {
+    "title": "Troubleshooting Guide",
+    "permalink": "/docs/faq/troubleshooting"
+  }
+}

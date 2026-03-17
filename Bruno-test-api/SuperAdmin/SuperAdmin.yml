@@ -1,0 +1,27 @@
+info:
+  name: SuperAdmin
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: https://micro-saaas.onrender.com/api/auth/login
+  headers:
+    - name: Authorization
+      value: Bearer afb00ed22c60317dae753fe8b24488a69996311faf98deb7b1643ed4c87982e4
+  body:
+    type: json
+    data: |-
+      {
+        "email":"superadmin22@gmail.com",
+        "password":"superadmin1234"
+      }
+  auth:
+    type: bearer
+    token: afb00ed22c60317dae753fe8b24488a69996311faf98deb7b1643ed4c87982e4
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -6,8 +6,8 @@ const BASE = "http://localhost:5000";
 const results = [];
 
 // Known test credentials
-const SA_EMAIL = "test-sa@test.com";
-const SA_PASS = "TestSuper@123";
+const SA_EMAIL = "superadmin11@gmail.com";
+const SA_PASS = "superadmin11";
 const TEST_ADMIN_EMAIL = `apitest-admin-${Date.now()}@test.com`;
 const TEST_ADMIN_PASS = "AdminTest@123";
 const TEST_MEMBER_EMAIL = `apitest-member-${Date.now()}@test.com`;

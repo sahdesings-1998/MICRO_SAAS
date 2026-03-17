@@ -1,0 +1,27 @@
+{
+  "id": "introduction/architecture",
+  "title": "Architecture",
+  "description": "System Architecture",
+  "source": "@site/docs/introduction/architecture.md",
+  "sourceDirName": "introduction",
+  "slug": "/introduction/architecture",
+  "permalink": "/docs/introduction/architecture",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/introduction/architecture.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Installation Guide 🔧",
+    "permalink": "/docs/introduction/installation"
+  },
+  "next": {
+    "title": "Authentication Guide 🔒",
+    "permalink": "/docs/guides/authentication"
+  }
+}

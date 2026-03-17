@@ -1,0 +1,30 @@
+info:
+  name: Admin Creation
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: https://micro-saaas.onrender.com/api/superadmin/admins
+  headers:
+    - name: Authorization
+      value: Bearer afb00ed22c60317dae753fe8b24488a69996311faf98deb7b1643ed4c87982e4
+  body:
+    type: json
+    data: |-
+      {  
+        "name": "API Test Admin",
+                  "email": "TEST_ADMIN_EMAIL",
+                  "password": "TEST_ADMIN_PASS",
+                  "mobile": "9999888800",
+                  "companyName": "TestCo"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWIyNTZjZWU0MDFiOTgzODUzNTUxNzQiLCJyb2xlIjoic3VwZXJhZG1pbiIsImlhdCI6MTc3MzQ2NzAyNCwiZXhwIjoxNzczNTUzNDI0fQ.VZVq7k4Pa49tXByMrE4PVHsjYBuXPJMbs0SzrNQY0JU
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

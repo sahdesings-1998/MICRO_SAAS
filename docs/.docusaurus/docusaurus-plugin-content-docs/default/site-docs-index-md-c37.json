@@ -1,0 +1,19 @@
+{
+  "id": "index",
+  "title": "Welcome to Micro-SaaS Documentation 🚀",
+  "description": "Your complete guide to building and deploying a professional SaaS platform.",
+  "source": "@site/docs/index.md",
+  "sourceDirName": ".",
+  "slug": "/",
+  "permalink": "/docs/",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/index.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 0,
+  "frontMatter": {
+    "sidebar_position": 0,
+    "slug": "/"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "guides/deployment",
+  "title": "Deployment Guide",
+  "description": "Complete guide to deploying Micro-SaaS to production.",
+  "source": "@site/docs/guides/deployment.md",
+  "sourceDirName": "guides",
+  "slug": "/guides/deployment",
+  "permalink": "/docs/guides/deployment",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/guides/deployment.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "sidebar_position": 4
+  }
+}

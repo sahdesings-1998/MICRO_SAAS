@@ -1,0 +1,23 @@
+{
+  "id": "faq/common-issues",
+  "title": "Common Issues",
+  "description": "Frequently encountered problems and quick solutions.",
+  "source": "@site/docs/faq/common-issues.md",
+  "sourceDirName": "faq",
+  "slug": "/faq/common-issues",
+  "permalink": "/docs/faq/common-issues",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/faq/common-issues.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Troubleshooting Guide",
+    "permalink": "/docs/faq/troubleshooting"
+  }
+}

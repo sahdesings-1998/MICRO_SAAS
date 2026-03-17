@@ -1,0 +1,27 @@
+{
+  "id": "introduction/installation",
+  "title": "Installation Guide 🔧",
+  "description": "Step-by-step guide to set up Micro-SaaS on your computer.",
+  "source": "@site/docs/introduction/installation.md",
+  "sourceDirName": "introduction",
+  "slug": "/introduction/installation",
+  "permalink": "/docs/introduction/installation",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/sahdesings-1998/MICRO_SAAS/tree/main/docs/docs/introduction/installation.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "sidebar_position": 3
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/docs/getting-started"
+  },
+  "next": {
+    "title": "Architecture",
+    "permalink": "/docs/introduction/architecture"
+  }
+}
