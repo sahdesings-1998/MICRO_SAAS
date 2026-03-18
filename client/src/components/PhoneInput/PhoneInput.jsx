@@ -14,6 +14,7 @@ const COUNTRIES = [
   { code: "FR", name: "France",         dial: "+33",  flag: "🇫🇷" },
   { code: "AE", name: "UAE",            dial: "+971", flag: "🇦🇪" },
   { code: "SG", name: "Singapore",      dial: "+65",  flag: "🇸🇬" },
+  { code: "HK", name: "Hong Kong",      dial: "+852", flag: "🇭🇰" },
   { code: "JP", name: "Japan",          dial: "+81",  flag: "🇯🇵" },
   { code: "CN", name: "China",          dial: "+86",  flag: "🇨🇳" },
   { code: "BR", name: "Brazil",         dial: "+55",  flag: "🇧🇷" },

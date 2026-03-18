@@ -133,6 +133,11 @@ const ReportsSection = ({
     return new Set(paid.map((inv) => String(inv.memberId?._id ?? inv.memberId ?? "")));
   }, [filteredInvoices]);
 
+  const memberIdsWithUnpaidInvoice = useMemo(() => {
+    const unpaid = filteredInvoices.filter((inv) => (inv.status || "").toLowerCase() !== "paid");
+    return new Set(unpaid.map((inv) => String(inv.memberId?._id ?? inv.memberId ?? "")));
+  }, [filteredInvoices]);
+
   const reportCards = useMemo(() => {
     const totalMembers = filteredMembers.length;
     const activeMembers = filteredMembers.filter((m) => m.isActive === true).length;
@@ -140,9 +145,17 @@ const ReportsSection = ({
     const paidMembers = filteredMembers.filter((m) =>
       memberIdsWithPaidInvoice.has(String(m._id ?? m.userId ?? ""))
     ).length;
+    // Members with unpaid invoices (including those who may also have paid invoices)
+    const membersWithUnpaidInvoices = filteredMembers.filter((m) =>
+      memberIdsWithUnpaidInvoice.has(String(m._id ?? m.userId ?? ""))
+    ).length;
+    // Calculate unpaid members: those with only unpaid invoices or no invoices but members exist
     const unpaidMembers = totalMembers - paidMembers;
     const totalRevenue = filteredInvoices
       .filter((inv) => (inv.status || "").toLowerCase() === "paid")
+      .reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
+    const unpaidInvoicesTotal = filteredInvoices
+      .filter((inv) => (inv.status || "").toLowerCase() !== "paid")
       .reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
 
     return [
@@ -152,8 +165,9 @@ const ReportsSection = ({
       { label: "Paid Members", value: paidMembers, icon: CARD_ICONS["Paid Members"], description: CARD_DESCRIPTIONS["Paid Members"] },
       { label: "Unpaid Members", value: unpaidMembers, icon: CARD_ICONS["Unpaid Members"], description: CARD_DESCRIPTIONS["Unpaid Members"] },
       { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: CARD_ICONS["Total Revenue"], description: CARD_DESCRIPTIONS["Total Revenue"] },
+      { label: "Unpaid Amount", value: `$${unpaidInvoicesTotal.toLocaleString()}`, icon: CARD_ICONS["Unpaid Members"], description: "Total unpaid invoice amount from members" },
     ];
-  }, [filteredMembers, filteredInvoices, memberIdsWithPaidInvoice]);
+  }, [filteredMembers, filteredInvoices, memberIdsWithPaidInvoice, memberIdsWithUnpaidInvoice]);
 
   const memberChartData = useMemo(() => {
     const active = filteredMembers.filter((m) => m.isActive === true).length;
@@ -186,9 +200,14 @@ const ReportsSection = ({
     const paid = filteredMembers.filter((m) =>
       memberIdsWithPaidInvoice.has(String(m._id ?? m.userId ?? ""))
     ).length;
-    const unpaid = filteredMembers.length - paid;
+    // Members with unpaid invoices
+    const withUnpaidInvoices = filteredMembers.filter((m) =>
+      memberIdsWithUnpaidInvoice.has(String(m._id ?? m.userId ?? ""))
+    ).length;
+    // Members with no invoices at all
+    const noInvoices = filteredMembers.length - paid - withUnpaidInvoices;
 
-    if (paid === 0 && unpaid === 0) {
+    if (paid === 0 && withUnpaidInvoices === 0 && noInvoices === 0) {
       return {
         labels: ["No data"],
         datasets: [{
@@ -199,17 +218,32 @@ const ReportsSection = ({
       };
     }
 
+    // Show three categories: Paid, Unpaid (from members' invoices), and No Invoices
+    const hasUnpaidData = withUnpaidInvoices > 0 || noInvoices > 0;
+    if (!hasUnpaidData) {
+      return {
+        labels: ["Paid", "No Data"],
+        datasets: [{
+          data: [paid, filteredMembers.length - paid],
+          backgroundColor: [COLORS.paid, "#e2e8f0"],
+          borderWidth: 2,
+          borderColor: "#fff",
+          hoverOffset: 4,
+        }],
+      };
+    }
+
     return {
-      labels: ["Paid", "Unpaid"],
+      labels: ["Paid", "Unpaid", "No Invoices"],
       datasets: [{
-        data: [paid, unpaid],
-        backgroundColor: [COLORS.paid, COLORS.unpaid],
+        data: [paid, withUnpaidInvoices, noInvoices],
+        backgroundColor: [COLORS.paid, COLORS.unpaid, "#e2e8f0"],
         borderWidth: 2,
         borderColor: "#fff",
         hoverOffset: 4,
       }],
     };
-  }, [filteredMembers]);
+  }, [filteredMembers, memberIdsWithPaidInvoice, memberIdsWithUnpaidInvoice]);
 
   const chartOptions = useMemo(
     () => ({
@@ -407,7 +441,7 @@ const ReportsSection = ({
           <table className="sa-table">
             <thead>
               <tr>
-                <th>Member Code</th>
+                {/* <th>Member Code</th> */}
                 <th>Member Name</th>
                 {/* <th>Company Name</th> */}
                 <th>Member Status</th>
@@ -424,7 +458,7 @@ const ReportsSection = ({
               ) : (
                 membersReportRows.map((row, idx) => (
                   <tr key={(row.memberCode || "") + idx}>
-                    <td>{row.memberCode}</td>
+                    {/* <td>{row.memberCode}</td> */}
                     <td>{row.memberName}</td>
                     {/* <td>{row.companyName}</td> */}
                     <td>
@@ -461,8 +495,8 @@ const ReportsSection = ({
           <table className="sa-table">
             <thead>
               <tr>
-                <th>Invoice ID</th>
-                <th>Member Code</th>
+                {/* <th>Invoice ID</th> */}
+                {/* <th>Member Code</th> */}
                 <th>Member Name</th>
                 <th>Subscription Plan</th>
                 <th>Amount</th>
@@ -480,8 +514,8 @@ const ReportsSection = ({
               ) : (
                 revenueReportRows.map((row, idx) => (
                   <tr key={row.invoiceId || idx}>
-                    <td>{row.invoiceId}</td>
-                    <td>{row.memberCode}</td>
+                    {/* <td>{row.invoiceId}</td> */}
+                    {/* <td>{row.memberCode}</td> */}
                     <td>{row.memberName}</td>
                     <td>{row.subscriptionPlan}</td>
                     <td>${row.invoiceAmount}</td>

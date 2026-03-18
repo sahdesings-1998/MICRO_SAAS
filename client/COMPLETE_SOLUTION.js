@@ -40,6 +40,7 @@ const COUNTRY_DIAL_CODES = [
   { dial: "+33",  code: "FR", name: "France" },
   { dial: "+971", code: "AE", name: "UAE" },
   { dial: "+65",  code: "SG", name: "Singapore" },
+  { dial: "+852", code: "HK", name: "Hong Kong" },
   { dial: "+81",  code: "JP", name: "Japan" },
   { dial: "+86",  code: "CN", name: "China" },
   { dial: "+55",  code: "BR", name: "Brazil" },

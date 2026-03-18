@@ -46,8 +46,8 @@ const InvoicesTable = ({
         <table className="sa-table">
           <thead>
             <tr>
-              <th>Invoice ID</th>
-              <th>Member Code</th>
+              {/* <th>Invoice ID</th> */}
+              {/* <th>Member Code</th> */}
               <th>Member Name</th>
               <th>Subscription Plan</th>
               <th>Amount</th>
@@ -80,8 +80,8 @@ const InvoicesTable = ({
 
                 return (
                   <tr key={rowId}>
-                    <td>{row.invoiceNumber || row._id || "—"}</td>
-                    <td>{row.memberCode || row.memberId?.memberCode || "—"}</td>
+                    {/* <td>{row.invoiceNumber || row._id || "—"}</td> */}
+                    {/* <td>{row.memberCode || row.memberId?.memberCode || "—"}</td> */}
                     <td>{row.memberName || row.memberId?.name || "—"}</td>
                     <td>{row.planName || row.subscriptionPlanId?.planName || "—"}</td>
                     <td>${row.amount ?? 0}</td>
