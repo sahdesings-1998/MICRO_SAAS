@@ -211,6 +211,7 @@ export const updateInvoice = async (req, res) => {
 
 export const toggleInvoiceStatus = async (req, res) => {
   const { invoiceId } = req.params;
+  const { paymentMethodId, paymentDate, paymentNotes, transactionId } = req.body;
 
   try {
     const invoice = await Invoice.findOne({
@@ -223,14 +224,59 @@ export const toggleInvoiceStatus = async (req, res) => {
       return res.status(404).json({ message: "Invoice not found" });
     }
 
-    invoice.status = invoice.status === "Paid" ? "Unpaid" : "Paid";
+    // Toggle status, but if we're receiving payment data, mark as Paid
+    if (paymentMethodId || paymentDate) {
+      invoice.status = "Paid";
+      
+      if (paymentMethodId) {
+        // Validate that payment method belongs to this admin
+        const PaymentMethod = (await import("../models/PaymentMethod.js")).default;
+        const method = await PaymentMethod.findOne({
+          _id: paymentMethodId,
+          adminId: req.user._id,
+          isDeleted: { $ne: true }
+        }).lean();
+
+        if (method) {
+          invoice.paymentMethodId = paymentMethodId;
+          invoice.paymentMethodName = method.name;
+        }
+      }
+      
+      if (paymentDate) {
+        invoice.paymentDate = new Date(paymentDate);
+      }
+      
+      if (paymentNotes) {
+        invoice.paymentNotes = String(paymentNotes).trim();
+      }
+      
+      if (transactionId) {
+        invoice.transactionId = String(transactionId).trim();
+      }
+    } else {
+      // Simple toggle without payment details
+      invoice.status = invoice.status === "Paid" ? "Unpaid" : "Paid";
+      
+      // Clear payment details if changing back to Unpaid
+      if (invoice.status === "Unpaid") {
+        invoice.paymentMethodId = null;
+        invoice.paymentMethodName = "";
+        invoice.paymentDate = null;
+        invoice.paymentNotes = "";
+        invoice.transactionId = "";
+      }
+    }
+
     await invoice.save();
 
     return res.status(200).json({
       message: `Invoice marked as ${invoice.status}`,
       invoice: {
         _id: invoice._id,
-        status: invoice.status
+        status: invoice.status,
+        paymentMethodName: invoice.paymentMethodName,
+        paymentDate: invoice.paymentDate
       }
     });
   } catch (error) {

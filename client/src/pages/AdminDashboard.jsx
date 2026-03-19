@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/Dashboard/MainLayout";
 import DatePicker from "../components/DatePicker";
@@ -18,7 +18,7 @@ import { parseE164Phone, getDefaultDialCode } from "../utils/phoneParser";
 import * as ds from "../services/dashboardService";
 import "../css/dashboard.css";
 
-const MENU = ["Dashboard", "Members", "Subscriptions", "Invoices", "Reports", "Account", "Logout"];
+const MENU = ["Dashboard", "Members", "Subscriptions", "Payment Methods", "Invoices", "Reports", "Account", "Logout"];
 
 
 
@@ -46,6 +46,11 @@ const validateInvoiceForm = (f) => {
   return "";
 };
 
+const validatePaymentMethodForm = (f) => {
+  if (!f.name?.trim()) return "Payment method name is required";
+  return "";
+};
+
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -59,6 +64,8 @@ const AdminDashboard = () => {
   const [subscriptionsLoading, setSubscriptionsLoading] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [paymentMethodsLoading, setPaymentMethodsLoading] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [memberForm, setMemberForm] = useState({
     name: "",
@@ -94,6 +101,15 @@ const AdminDashboard = () => {
   });
   const [editingInvoiceId, setEditingInvoiceId] = useState(null);
   const [invoiceFormErr, setInvoiceFormErr] = useState("");
+
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [paymentMethodForm, setPaymentMethodForm] = useState({
+    name: "",
+    description: "",
+    isActive: true,
+  });
+  const [editingMethodId, setEditingMethodId] = useState(null);
+  const [paymentMethodFormErr, setPaymentMethodFormErr] = useState("");
 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteReason, setDeleteReason] = useState("");
@@ -146,7 +162,16 @@ const AdminDashboard = () => {
     setInvoicesLoading(false);
   };
 
-  useEffect(() => { loadStats(); loadRevenueByMonth(); }, []);
+  const loadPaymentMethods = async () => {
+    setPaymentMethodsLoading(true);
+    try {
+      const { data } = await ds.getPaymentMethods();
+      setPaymentMethods(data?.methods || data || []);
+    } catch { /* silent */ }
+    setPaymentMethodsLoading(false);
+  };
+
+  useEffect(() => { loadStats(); loadRevenueByMonth(); loadPaymentMethods(); }, []);
   useEffect(() => {
     if (activeItem === "Dashboard") {
       loadStats();
@@ -427,6 +452,14 @@ const AdminDashboard = () => {
     e.preventDefault();
     const err = validateInvoiceForm(invoiceForm);
     if (err) { setInvoiceFormErr(err); return; }
+    
+    // Check if the selected member is still active
+    const selectedMember = members.find((m) => String(m._id || m.userId || "") === String(invoiceForm.memberId));
+    if (!selectedMember || selectedMember.isActive === false) {
+      setInvoiceFormErr("Cannot create invoice for an inactive member");
+      return;
+    }
+    
     try {
       await ds.createInvoice({
         memberId: invoiceForm.memberId,
@@ -471,6 +504,14 @@ const AdminDashboard = () => {
     const err = validateInvoiceForm(invoiceForm);
     if (err) { setInvoiceFormErr(err); return; }
     if (!editingInvoiceId) return;
+    
+    // Check if the selected member is still active
+    const selectedMember = members.find((m) => String(m._id || m.userId || "") === String(invoiceForm.memberId));
+    if (!selectedMember || selectedMember.isActive === false) {
+      setInvoiceFormErr("Cannot update invoice: member is inactive");
+      return;
+    }
+    
     try {
       await ds.updateInvoice(editingInvoiceId, {
         memberId: invoiceForm.memberId || undefined,
@@ -496,9 +537,9 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleToggleInvoiceStatus = async (id) => {
+  const handleToggleInvoiceStatus = async (id, paymentData) => {
     try {
-      await ds.toggleInvoiceStatus(id);
+      await ds.toggleInvoiceStatus(id, paymentData || {});
       loadInvoices();
       loadMembers();
       loadStats();
@@ -523,10 +564,81 @@ const AdminDashboard = () => {
     } catch { /* silent */ }
   };
 
+  const handleCreatePaymentMethod = async (e) => {
+    e.preventDefault();
+    const err = validatePaymentMethodForm(paymentMethodForm);
+    if (err) { setPaymentMethodFormErr(err); return; }
+    try {
+      await ds.createPaymentMethod({
+        name: paymentMethodForm.name.trim(),
+        description: (paymentMethodForm.description || "").trim(),
+        isActive: paymentMethodForm.isActive,
+      });
+      setShowPaymentMethodModal(false);
+      setPaymentMethodForm({ name: "", description: "", isActive: true });
+      setPaymentMethodFormErr("");
+      loadPaymentMethods();
+    } catch (ex) {
+      setPaymentMethodFormErr(ex?.response?.data?.message || "Failed to create payment method");
+    }
+  };
+
+  const handleEditPaymentMethod = (id) => {
+    const m = paymentMethods.find((x) => String(x._id || "") === String(id));
+    if (!m) return;
+    setPaymentMethodForm({
+      name: m.name || "",
+      description: m.description || "",
+      isActive: m.isActive ?? true,
+    });
+    setEditingMethodId(id);
+    setShowPaymentMethodModal(true);
+    setPaymentMethodFormErr("");
+  };
+
+  const handleUpdatePaymentMethod = async (e) => {
+    e.preventDefault();
+    const err = validatePaymentMethodForm(paymentMethodForm);
+    if (err) { setPaymentMethodFormErr(err); return; }
+    if (!editingMethodId) return;
+    try {
+      await ds.updatePaymentMethod(String(editingMethodId), {
+        name: paymentMethodForm.name.trim(),
+        description: (paymentMethodForm.description || "").trim(),
+        isActive: paymentMethodForm.isActive,
+      });
+      setShowPaymentMethodModal(false);
+      setPaymentMethodForm({ name: "", description: "", isActive: true });
+      setEditingMethodId(null);
+      setPaymentMethodFormErr("");
+      loadPaymentMethods();
+    } catch (ex) {
+      setPaymentMethodFormErr(ex?.response?.data?.message || "Failed to update payment method");
+    }
+  };
+
+  const openDeletePaymentMethod = (id) => {
+    setDeleteTarget(id);
+    setDeleteReason("");
+    setDeleteType("payment_method");
+  };
+
+  const handleDeletePaymentMethod = async () => {
+    if (deleteType !== "payment_method") return;
+    try {
+      await ds.deletePaymentMethod(deleteTarget);
+      setDeleteTarget(null);
+      setDeleteReason("");
+      setDeleteType("");
+      loadPaymentMethods();
+    } catch { /* silent */ }
+  };
+
   const handleDeleteConfirm = () => {
     if (deleteType === "member") handleDeleteMember();
     else if (deleteType === "subscription") handleDeleteSubscription();
     else if (deleteType === "invoice") handleDeleteInvoice();
+    else if (deleteType === "payment_method") handleDeletePaymentMethod();
   };
 
   const cards = stats
@@ -586,6 +698,86 @@ const AdminDashboard = () => {
           />
         );
 
+      case "Payment Methods":
+        return (
+          <div className="sa-panel">
+            <div className="sa-panel-header">
+              <h3 className="sa-panel-title">Payment Methods</h3>
+              <button 
+                type="button"
+                className="sa-btn sa-btn-primary"
+                onClick={() => { setPaymentMethodForm({ name: "", description: "", isActive: true }); setEditingMethodId(null); setShowPaymentMethodModal(true); }}
+              >
+                + Add Payment Method
+              </button>
+            </div>
+
+            <div className="sa-table-wrapper">
+              <table className="sa-table">
+                <thead>
+                  <tr>
+                    <th>Method Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paymentMethodsLoading && (
+                    <tr>
+                      <td colSpan="4" className="sa-table-empty">
+                        Loading...
+                      </td>
+                    </tr>
+                  )}
+
+                  {!paymentMethodsLoading && paymentMethods.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="sa-table-empty">
+                        No payment methods found
+                      </td>
+                    </tr>
+                  )}
+
+                  {!paymentMethodsLoading && paymentMethods.map((method) => (
+                    <tr key={method._id}>
+                      <td>{method.name}</td>
+                      <td>{method.description || "—"}</td>
+                      <td>
+                        <span className={`sa-badge ${method.isActive ? "sa-badge-active" : "sa-badge-inactive"}`}>
+                          {method.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="sa-table-actions">
+                          <button 
+                            type="button"
+                            className="sa-btn sa-btn-outline sa-btn-sm"
+                            onClick={() => handleEditPaymentMethod(method._id)}
+                            title="Edit payment method"
+                            aria-label="Edit payment method"
+                          >
+                            <FiEdit2 />
+                          </button>
+                          <button 
+                            type="button"
+                            className="sa-btn sa-btn-danger sa-btn-sm"
+                            onClick={() => openDeletePaymentMethod(method._id)}
+                            title="Delete payment method"
+                            aria-label="Delete payment method"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+
       case "Invoices":
         return (
           <InvoicesTable
@@ -597,6 +789,7 @@ const AdminDashboard = () => {
             onEdit={handleEditInvoice}
             onToggleStatus={handleToggleInvoiceStatus}
             onSoftDelete={openDeleteInvoice}
+            paymentMethods={paymentMethods}
             loading={invoicesLoading}
           />
         );
@@ -647,6 +840,7 @@ const AdminDashboard = () => {
             )
             : []
         }
+        paymentMethods={paymentMethods}
         onClose={() => {
           setShowMemberDetailsModal(false);
           setViewMember(null);
@@ -1007,7 +1201,7 @@ const AdminDashboard = () => {
                 required
               >
                 <option value="">— Select Member —</option>
-                {(members || []).map((m) => (
+                {(members || []).filter((m) => m.isActive !== false).map((m) => (
                   <option key={String(m._id || m.userId || "")} value={String(m._id || m.userId || "")}>
                     {m.name} ({m.email})
                   </option>
@@ -1160,8 +1354,82 @@ const AdminDashboard = () => {
           <button type="button" className="sa-btn sa-btn-danger" onClick={confirmLogout}>
             Yes, Logout
           </button>
-
         </div>
+      </DashboardModal>
+
+      {/* Payment Method Modal */}
+      <DashboardModal
+        open={showPaymentMethodModal}
+        title={editingMethodId ? "Edit Payment Method" : "Add Payment Method"}
+        onClose={() => { setShowPaymentMethodModal(false); setEditingMethodId(null); }}
+        size="form"
+      >
+        <form className="sa-form" onSubmit={editingMethodId ? handleUpdatePaymentMethod : handleCreatePaymentMethod}>
+          <div className="sa-form-field">
+            <label className="sa-form-label">Payment Method Name *</label>
+            <input
+              className="sa-form-input"
+              type="text"
+              value={paymentMethodForm.name}
+              onChange={(e) => setPaymentMethodForm({ ...paymentMethodForm, name: e.target.value })}
+              placeholder="e.g., UPI, Bank Transfer, Cash"
+              required
+            />
+          </div>
+
+          <div className="sa-form-field">
+            <label className="sa-form-label">Description (Optional)</label>
+            <textarea
+              className="sa-form-textarea"
+              value={paymentMethodForm.description}
+              onChange={(e) => setPaymentMethodForm({ ...paymentMethodForm, description: e.target.value })}
+              placeholder="e.g., Details about this payment method"
+              rows="3"
+            />
+          </div>
+
+          <div className="sa-form-field">
+  <label className="sa-form-label">Status</label>
+  <select
+    className="sa-form-select"
+    value={paymentMethodForm.isActive ? "active" : "inactive"}
+    onChange={(e) =>
+      setPaymentMethodForm({
+        ...paymentMethodForm,
+        isActive: e.target.value === "active",
+      })
+    }
+  >
+    <option value="active">Active</option>
+    <option value="inactive">Inactive</option>
+  </select>
+</div>
+
+          {/* <div className="sa-form-field">
+            <label className="sa-checkbox-label">
+              <input
+                type="checkbox"
+                className="sa-checkbox-input"
+                checked={paymentMethodForm.isActive}
+                onChange={(e) => setPaymentMethodForm({ ...paymentMethodForm, isActive: e.target.checked })}
+              />
+              <span>Active</span>
+            </label>
+          </div> */}
+
+          {paymentMethodFormErr && (
+            <p className="sa-form-error">{paymentMethodFormErr}</p>
+          )}
+
+          <div className="sa-form-actions">
+            <button type="button" className="sa-btn sa-btn-outline" onClick={() => setShowPaymentMethodModal(false)}>
+              Cancel
+            </button>
+            <button type="submit" className="sa-btn sa-btn-primary">
+              {editingMethodId ? "Update" : "Add"}
+            </button>
+          </div>
+        </form>
       </DashboardModal>
     </MainLayout>
   );

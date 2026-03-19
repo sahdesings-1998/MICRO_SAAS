@@ -18,6 +18,12 @@ import {
   toggleInvoiceStatus,
   updateInvoice
 } from "../controllers/invoiceController.js";
+import {
+  getPaymentMethods,
+  createPaymentMethod,
+  updatePaymentMethod,
+  deletePaymentMethod
+} from "../controllers/paymentMethodController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { allowRoles } from "../middleware/roleMiddleware.js";
 
@@ -36,6 +42,11 @@ router.post("/invoices", createInvoice);
 router.put("/invoices/:invoiceId", updateInvoice);
 router.patch("/invoices/:invoiceId/status", toggleInvoiceStatus);
 router.patch("/invoices/:invoiceId/soft-delete", softDeleteInvoice);
+
+router.get("/payment-methods", getPaymentMethods);
+router.post("/payment-methods", createPaymentMethod);
+router.put("/payment-methods/:methodId", updatePaymentMethod);
+router.delete("/payment-methods/:methodId", deletePaymentMethod);
 
 router.get("/stats", getAdminStats);
 router.get("/dashboard", getAdminStats);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiCheck, FiTrash2 } from "react-icons/fi";
 import DashboardModal from "./DashboardModal";
+import PaymentConfirmModal from "./PaymentConfirmModal";
 import "../../css/dashboard.css";
 
 const InvoicesTable = ({
@@ -12,23 +13,35 @@ const InvoicesTable = ({
   onEdit,
   onToggleStatus,
   onSoftDelete,
+  paymentMethods = [],
   loading = false,
 }) => {
   const [confirmMarkPaidId, setConfirmMarkPaidId] = useState(null);
+  const [confirmMarkPaidData, setConfirmMarkPaidData] = useState(null);
 
   const handleMarkPaidClick = (id) => {
-    setConfirmMarkPaidId(id);
+    const row = rows.find((r) => String(r._id || "") === String(id));
+    if (row) {
+      setConfirmMarkPaidData({
+        invoiceId: id,
+        invoiceNumber: row.invoiceNumber || row._id || "—",
+        amount: row.amount || 0
+      });
+      setConfirmMarkPaidId(id);
+    }
   };
 
-  const handleConfirmMarkPaid = () => {
+  const handleConfirmMarkPaid = (paymentData) => {
     if (confirmMarkPaidId && onToggleStatus) {
-      onToggleStatus(confirmMarkPaidId);
+      onToggleStatus(confirmMarkPaidId, paymentData);
     }
     setConfirmMarkPaidId(null);
+    setConfirmMarkPaidData(null);
   };
 
   const handleCancelMarkPaid = () => {
     setConfirmMarkPaidId(null);
+    setConfirmMarkPaidData(null);
   };
 
   return (
@@ -134,33 +147,15 @@ const InvoicesTable = ({
         </table>
       </div>
 
-      <DashboardModal
+      <PaymentConfirmModal
         open={confirmMarkPaidId !== null}
-        title="Confirm Payment"
-        onClose={handleCancelMarkPaid}
-      >
-        <div className="sa-confirmation-modal">
-          <p className="sa-confirmation-message">
-            Are you sure you want to mark this invoice as paid?
-          </p>
-          <div className="sa-confirmation-actions">
-            <button
-              type="button"
-              className="sa-btn sa-btn-secondary"
-              onClick={handleCancelMarkPaid}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="sa-btn sa-btn-primary"
-              onClick={handleConfirmMarkPaid}
-            >
-              Yes, Mark as Paid
-            </button>
-          </div>
-        </div>
-      </DashboardModal>
+        invoiceNumber={confirmMarkPaidData?.invoiceNumber}
+        amount={confirmMarkPaidData?.amount}
+        paymentMethods={paymentMethods}
+        onConfirm={handleConfirmMarkPaid}
+        onCancel={handleCancelMarkPaid}
+        loading={loading}
+      />
     </div>
   );
 };

@@ -35,10 +35,15 @@ export const getAdminInvoices = () => api.get("admin/invoices");
 export const createInvoice = (payload) => api.post("admin/invoices", payload);
 export const updateInvoice = (invoiceId, payload) =>
   api.put(`admin/invoices/${invoiceId}`, payload);
-export const toggleInvoiceStatus = (invoiceId) =>
-  api.patch(`admin/invoices/${invoiceId}/status`);
+export const toggleInvoiceStatus = (invoiceId, payload) =>
+  api.patch(`admin/invoices/${invoiceId}/status`, payload);
 export const softDeleteInvoice = (invoiceId, payload) =>
   api.patch(`admin/invoices/${invoiceId}/soft-delete`, payload);
+
+export const getPaymentMethods = () => api.get("admin/payment-methods");
+export const createPaymentMethod = (payload) => api.post("admin/payment-methods", payload);
+export const updatePaymentMethod = (methodId, payload) => api.put(`admin/payment-methods/${methodId}`, payload);
+export const deletePaymentMethod = (methodId) => api.delete(`admin/payment-methods/${methodId}`);
 
 export const getMemberProfile = () => api.get("member/profile");
 export const updateMemberProfile = (payload) => api.put("member/profile", payload);

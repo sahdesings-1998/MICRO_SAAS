@@ -29,6 +29,15 @@ const invoiceSchema = new mongoose.Schema(
     invoiceDate: { type: Date, required: true, default: Date.now },
     date: { type: Date, default: null },
     dueDate: { type: Date, default: null },
+    paymentMethodId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PaymentMethod",
+      default: null
+    },
+    paymentMethodName: { type: String, default: "" },
+    paymentDate: { type: Date, default: null },
+    paymentNotes: { type: String, default: "" },
+    transactionId: { type: String, default: "" },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
     deleteReason: { type: String, default: "" }
