@@ -978,7 +978,7 @@ const AdminDashboard = () => {
             </div>
             <div className="sa-form-field">
               <label className="sa-form-label">Email</label>
-              <input className="sa-form-input" type="email" value={memberForm.email} onChange={(e) => setMemberForm({ ...memberForm, email: e.target.value })} required />
+              <input className="sa-form-input" type="email" value={memberForm.email} onChange={(e) => setMemberForm({ ...memberForm, email: e.target.value })} autoComplete="off" required />
             </div>
           </div>
 
@@ -987,7 +987,7 @@ const AdminDashboard = () => {
               <div className="sa-form-field">
                 <label className="sa-form-label">Password</label>
                 <div className="sa-form-pw-wrap">
-                  <input className="sa-form-input" type={showMemberPw ? "text" : "password"} value={memberForm.password} onChange={(e) => setMemberForm({ ...memberForm, password: e.target.value })} required />
+                  <input className="sa-form-input" type={showMemberPw ? "text" : "password"} value={memberForm.password} onChange={(e) => setMemberForm({ ...memberForm, password: e.target.value })} autoComplete="new-password" required />
                   <button type="button" className="sa-form-pw-toggle" onClick={() => setShowMemberPw((v) => !v)}>{showMemberPw ? <FiEyeOff /> : <FiEye />}</button>
                 </div>
               </div>

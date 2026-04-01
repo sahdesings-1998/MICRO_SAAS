@@ -590,6 +590,7 @@ const MemberAccountSection = ({ member, onSaved }) => {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  autoComplete="off"
                   required
                 />
               </div>

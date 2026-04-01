@@ -278,14 +278,14 @@ const SuperAdminDashboard = () => {
             </div>
             <div className="sa-form-field">
               <label className="sa-form-label">Email</label>
-              <input className="sa-form-input" type="email" value={adminForm.email} onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })} required />
+              <input className="sa-form-input" type="email" value={adminForm.email} onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })} autoComplete="off" required />
             </div>
           </div>
           <div className="sa-form-row">
             <div className="sa-form-field">
               <label className="sa-form-label">Password</label>
               <div className="sa-form-pw-wrap">
-                <input className="sa-form-input" type={showAdminPw ? "text" : "password"} value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} required />
+                <input className="sa-form-input" type={showAdminPw ? "text" : "password"} value={adminForm.password} onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })} autoComplete="new-password" required />
                 <button type="button" className="sa-form-pw-toggle" onClick={() => setShowAdminPw((v) => !v)}>{showAdminPw ? <FiEyeOff /> : <FiEye />}</button>
               </div>
             </div>
@@ -317,14 +317,14 @@ const SuperAdminDashboard = () => {
             </div>
             <div className="sa-form-field">
               <label className="sa-form-label">Email</label>
-              <input className="sa-form-input" type="email" value={saForm.email} onChange={(e) => setSaForm({ ...saForm, email: e.target.value })} required />
+              <input className="sa-form-input" type="email" value={saForm.email} onChange={(e) => setSaForm({ ...saForm, email: e.target.value })} autoComplete="off" required />
             </div>
           </div>
           <div className="sa-form-row">
             <div className="sa-form-field">
               <label className="sa-form-label">Password</label>
               <div className="sa-form-pw-wrap">
-                <input className="sa-form-input" type={showSaPw ? "text" : "password"} value={saForm.password} onChange={(e) => setSaForm({ ...saForm, password: e.target.value })} required />
+                <input className="sa-form-input" type={showSaPw ? "text" : "password"} value={saForm.password} onChange={(e) => setSaForm({ ...saForm, password: e.target.value })} autoComplete="new-password" required />
                 <button type="button" className="sa-form-pw-toggle" onClick={() => setShowSaPw((v) => !v)}>{showSaPw ? <FiEyeOff /> : <FiEye />}</button>
               </div>
             </div>

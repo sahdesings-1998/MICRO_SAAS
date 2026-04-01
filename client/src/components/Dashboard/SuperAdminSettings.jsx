@@ -195,6 +195,7 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
                 type="email"
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                autoComplete="off"
                 required
               />
             </div>
@@ -218,6 +219,7 @@ const SuperAdminSettings = ({ onAddSuperAdmin, onRefresh }) => {
                 value={editForm.password}
                 onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                 placeholder="Leave blank to keep current"
+                autoComplete="new-password"
               />
             </div>
           </div>

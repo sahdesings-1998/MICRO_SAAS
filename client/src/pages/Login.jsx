@@ -91,6 +91,7 @@ const Login = () => {
                 placeholder="you@company.com"
                 value={form.email}
                 onChange={onChange}
+                autoComplete="off"
                 required
               />
             </div>
@@ -108,6 +109,7 @@ const Login = () => {
                   placeholder="Enter your password"
                   value={form.password}
                   onChange={onChange}
+                  autoComplete="new-password"
                   required
                 />
                 <button
