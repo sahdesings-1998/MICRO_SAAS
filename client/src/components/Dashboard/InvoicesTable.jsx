@@ -66,6 +66,7 @@ const InvoicesTable = ({
               <th>Amount</th>
               <th>Status</th>
               <th>Invoice Date</th>
+              <th>Due Date</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -113,6 +114,9 @@ const InvoicesTable = ({
                       {row.date ? new Date(row.date).toLocaleDateString() : "—"}
                     </td>
                     <td>
+                      {row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "—"}
+                    </td>
+                    <td>
                       <div className="sa-table-actions">
                         {(row.status || "").toLowerCase() !== "paid" && onToggleStatus && (
                           <button
@@ -140,6 +144,7 @@ const InvoicesTable = ({
                         )}
                       </div>
                     </td>
+                    
                   </tr>
                 );
               })}

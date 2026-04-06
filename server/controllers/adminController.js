@@ -409,3 +409,40 @@ export const updateAdminProfile = async (req, res) => {
     return res.status(500).json({ message: error?.message || "Server error" });
   }
 };
+
+/**
+ * Manual trigger for member status automation (superadmin only)
+ */
+export const triggerMemberStatusAutomation = async (req, res) => {
+  try {
+    const { processAllMembersOverdueStatus } = await import("../services/memberStatusService.js");
+    const summary = await processAllMembersOverdueStatus();
+
+    return res.status(200).json({
+      message: "Member status automation completed successfully",
+      summary
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Automation failed",
+      error: error?.message || "Unknown error"
+    });
+  }
+};
+
+/**
+ * Get member status automation statistics (superadmin only)
+ */
+export const getMemberStatusStats = async (req, res) => {
+  try {
+    const { getMemberStatusAutomationStats } = await import("../services/memberStatusService.js");
+    const stats = await getMemberStatusAutomationStats(req.user._id);
+
+    return res.status(200).json(stats);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch automation statistics",
+      error: error?.message || "Unknown error"
+    });
+  }
+};

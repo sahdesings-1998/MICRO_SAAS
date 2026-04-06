@@ -8,6 +8,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import { protect } from "./middleware/authMiddleware.js";
 import { allowRoles } from "./middleware/roleMiddleware.js";
+import { initializeMemberStatusScheduler } from "./utils/scheduler.js";
 import {
   createSubscription,
   getSubscriptions,
@@ -17,6 +18,9 @@ import {
 
 dotenv.config();
 connectDB();
+
+// Initialize member status automation scheduler
+initializeMemberStatusScheduler();
 
 const app = express();
 

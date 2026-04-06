@@ -9,7 +9,9 @@ import {
   softDeleteMember,
   toggleMemberStatus,
   updateAdminProfile,
-  updateMember
+  updateMember,
+  triggerMemberStatusAutomation,
+  getMemberStatusStats
 } from "../controllers/adminController.js";
 import {
   createInvoice,
@@ -54,6 +56,10 @@ router.get("/reports", getAdminReports);
 router.get("/revenue-by-month", getAdminRevenueByMonth);
 router.get("/profile", getAdminProfile);
 router.put("/profile", updateAdminProfile);
+
+// Member status automation endpoints
+router.post("/automation/trigger-status-check", triggerMemberStatusAutomation);
+router.get("/automation/member-status-stats", getMemberStatusStats);
 
 export default router;
 
