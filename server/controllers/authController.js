@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { findUserByEmailAcrossCollections } from "../utils/userModelByRole.js";
+import Admin from "../models/Admin.js";
 
 const generateToken = (userId, role) => {
   return jwt.sign({ userId, role }, process.env.JWT_SECRET, {
@@ -22,6 +23,13 @@ export const loginUser = async (req, res) => {
 
     if (!user.isActive) {
       return res.status(403).json({ message: "Account is deactivated" });
+    }
+
+    if (user.role === 'member') {
+      const admin = await Admin.findById(user.adminId);
+      if (!admin || !admin.isActive) {
+        return res.status(403).json({ message: "Organization is deactivated" });
+      }
     }
 
     return res.json({

@@ -113,6 +113,18 @@ export const toggleAdminStatus = async (req, res) => {
     }
     await admin.save();
 
+    // If deactivating admin, also deactivate all dependent members
+    if (!admin.isActive) {
+      await Member.updateMany(
+        { adminId: admin._id },
+        { 
+          isActive: false, 
+          statusReason: "Admin organization deactivated", 
+          statusUpdatedAt: new Date() 
+        }
+      );
+    }
+
     return res.status(200).json({
       message: `Admin ${admin.isActive ? "activated" : "deactivated"} successfully`,
       admin: {
@@ -146,6 +158,16 @@ export const softDeleteAdmin = async (req, res) => {
     admin.deletedAt = new Date();
     admin.deleteReason = reason.trim();
     await admin.save();
+
+    // Deactivate all dependent members
+    await Member.updateMany(
+      { adminId: admin._id },
+      { 
+        isActive: false, 
+        statusReason: "Admin organization deleted", 
+        statusUpdatedAt: new Date() 
+      }
+    );
 
     return res.status(200).json({
       message: "Admin soft deleted successfully",

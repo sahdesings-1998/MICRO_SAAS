@@ -88,7 +88,7 @@ const Login = () => {
                 name="email"
                 type="email"
                 className="auth-input"
-                placeholder="you@company.com"
+                placeholder="Enter your Email"
                 value={form.email}
                 onChange={onChange}
                 autoComplete="off"

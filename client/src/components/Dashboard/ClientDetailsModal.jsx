@@ -126,12 +126,12 @@ const ClientDetailsModal = ({ open, adminId, onClose }) => {
                   </div>
                 </div>
               </div>
-
+{/* 
               <div className="sa-modal-actions">
                 <button type="button" className="sa-btn sa-btn-primary" onClick={onClose}>
                   Close
                 </button>
-              </div>
+              </div> */}
             </>
           )}
         </div>
